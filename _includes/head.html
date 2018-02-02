@@ -1,6 +1,10 @@
 <head>
   <meta http-equiv="x-ua-compatible" content="ie=edge">
+  {% if page.title == "" %}
+  <title>{{ site.name }}</title>
+  {% else %}
   <title>{{ site.name }} | {{ page.title }}</title>
+  {% endif %}
   <meta name="description" content="{{ page.description }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -24,8 +28,8 @@
       <meta name="twitter:image" content="{{ site.url }}{% asset '{{ page.thumb_image }}' @path %}">
     {% endif %}
   {% else %}
-    <meta property="og:image" content="{{ site.url }}{% asset og-image.jpg @path %}">
-    <meta name="twitter:image" content="{{ site.url }}{% asset og-image.jpg @path %}">
+    <meta property="og:image" content="{{ site.url }}{% asset og-image.png @path %}">
+    <meta name="twitter:image" content="{{ site.url }}{% asset og-image.png @path %}">
   {% endif %}
 
   <link href="{{ 'feed.xml' | absolute_url }}" type="application/rss+xml" rel="alternate" title="{{ site.name }} Last 10 blog posts" />
