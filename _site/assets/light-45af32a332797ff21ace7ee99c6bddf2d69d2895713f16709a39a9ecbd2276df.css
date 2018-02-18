@@ -67,8 +67,7 @@ figure {
  * 2. Show the overflow in Edge and IE.
  */
 hr {
-  -webkit-box-sizing: content-box;
-          box-sizing: content-box;
+  box-sizing: content-box;
   /* 1 */
   height: 0;
   /* 1 */
@@ -292,8 +291,7 @@ fieldset {
  *    `fieldset` elements in all browsers.
  */
 legend {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   /* 1 */
   color: inherit;
   /* 2 */
@@ -328,8 +326,7 @@ textarea {
  */
 [type="checkbox"],
 [type="radio"] {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   /* 1 */
   padding: 0;
   /* 2 */ }
@@ -433,7 +430,6 @@ template {
 .fluidbox__overlay {
   background-color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
-  cursor: -webkit-zoom-out;
   cursor: zoom-out;
   opacity: 0;
   pointer-events: none;
@@ -445,7 +441,6 @@ template {
   /* Negative top and bottom is to fix some Safari cases where image got blurry */
   right: 0;
   /* Transition time for overlay is halved to ensure that flickering doesn't happen */
-  -webkit-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out; }
   .fluidbox--opened .fluidbox__overlay {
     pointer-events: auto; }
@@ -455,15 +450,12 @@ template {
   background-size: cover;
   margin: 0 auto;
   position: relative;
-  -webkit-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out; }
 
 .fluidbox__thumb {
-  -webkit-transition: opacity 0s ease-in-out 0s;
   transition: opacity 0s ease-in-out 0s;
   /* To prevent flickering, we delay the showing of the image */ }
   .fluidbox--closed .fluidbox__thumb {
-    -webkit-transition: opacity 0s ease-in-out 0s;
     transition: opacity 0s ease-in-out 0s; }
 
 .fluidbox__ghost {
@@ -471,16 +463,13 @@ template {
   background-position: center center;
   background-repeat: no-repeat;
   position: absolute;
-  -webkit-transition: opacity 0s 0s, -webkit-transform 0.5s 0s;
   transition: opacity 0s 0s, -webkit-transform 0.5s 0s;
   transition: opacity 0s 0s, transform 0.5s 0s;
   transition: opacity 0s 0s, transform 0.5s 0s, -webkit-transform 0.5s 0s; }
   .fluidbox--opened .fluidbox__ghost {
     cursor: pointer;
-    cursor: -webkit-zoom-out;
     cursor: zoom-out; }
   .fluidbox--closed .fluidbox__ghost {
-    -webkit-transition: opacity 0s 0.5s, -webkit-transform 0.5s 0s;
     transition: opacity 0s 0.5s, -webkit-transform 0.5s 0s;
     transition: opacity 0s 0.5s, transform 0.5s 0s;
     transition: opacity 0s 0.5s, transform 0.5s 0s, -webkit-transform 0.5s 0s; }
@@ -508,18 +497,14 @@ template {
     padding-bottom: 20%;
     -webkit-transform: translate(-50%, -50%);
             transform: translate(-50%, -50%);
-    -webkit-transition-property: -webkit-transform;
     transition-property: -webkit-transform;
     transition-property: transform;
     transition-property: transform, -webkit-transform;
-    -webkit-transition-duration: 0.5s;
-            transition-duration: 0.5s;
-    -webkit-transition-delay: 0s;
-            transition-delay: 0s; }
+    transition-duration: 0.5s;
+    transition-delay: 0s; }
 
 .fluidbox--loading .fluidbox__loader {
   opacity: 1;
-  -webkit-transition: opacity 0.5s ease-in-out 0.5s;
   transition: opacity 0.5s ease-in-out 0.5s; }
   .fluidbox--loading .fluidbox__loader::before {
     -webkit-animation: fluidboxLoading 1s 0s infinite ease-in-out forwards;
@@ -528,8 +513,7 @@ template {
 *,
 *::before,
 *::after {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box; }
+  box-sizing: border-box; }
 
 html {
   font-size: 16px; }
@@ -600,7 +584,6 @@ h6 {
 a {
   color: #615b5b;
   text-decoration: underline;
-  -webkit-transition: color 0.2s linear;
   transition: color 0.2s linear; }
   a:hover, a:active {
     color: #393636; }
@@ -609,7 +592,6 @@ a {
     outline: none; }
 
 svg {
-  -webkit-transition: fill 0.2s linear;
   transition: fill 0.2s linear; }
 
 ul,
@@ -654,8 +636,7 @@ img {
 .avatar {
   width: 40%;
   border-radius: 6px;
-  -webkit-box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
-          box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
   margin-top: 10px; }
 
 .text-primary {
@@ -842,7 +823,6 @@ a:hover {
         color: #888181;
         text-decoration: none;
         text-transform: uppercase;
-        -webkit-transition: color 0.2s linear;
         transition: color 0.2s linear; }
         .article-list li.article-pagination a svg {
           width: 16px;
@@ -870,7 +850,6 @@ a:hover {
       margin: -2px 8px 0 8px;
       fill: #121111;
       opacity: 0;
-      -webkit-transition: opacity 0.2s linear;
       transition: opacity 0.2s linear; }
   .article-list-item a:hover h5 svg {
     opacity: 1; }
@@ -968,7 +947,6 @@ a:hover {
     vertical-align: middle; }
     .article-share a svg {
       vertical-align: middle;
-      -webkit-transition: fill 0.2s linear;
       transition: fill 0.2s linear;
       fill: #ada8a8;
       width: 20px; }
@@ -1276,5 +1254,4 @@ a:hover {
 .appeared {
   visibility: visible;
   opacity: 1;
-  -webkit-transition: opacity 0.5s ease-in-out;
   transition: opacity 0.5s ease-in-out; }

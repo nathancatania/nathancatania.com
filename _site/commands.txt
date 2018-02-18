@@ -1,0 +1,6 @@
+Run Locally:
+bundle exec jekyll serve
+
+Deploy to GitHub Pages:
+[Before you deploy, commit your changes to any working branch except the `gh-pages` one and run the following command:]
+bin/deploy
