@@ -70,10 +70,11 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - package.json
+  - package-lock.json
   - README.md
   - vendor/
   - yarn.lock
-  - commands.txt
+  - SETUP.md
 plugins:
   - jekyll-assets
   - jekyll-paginate

@@ -6,7 +6,6 @@ The theme is a modified version of the [Chalk][3] theme.
 
 ## TODO List
 * Comments
-* Keep hoping that Github enables SSL support for custom domains.
 
 [1]: https://www.jekyllrb.com
 [2]: https://pages.github.com

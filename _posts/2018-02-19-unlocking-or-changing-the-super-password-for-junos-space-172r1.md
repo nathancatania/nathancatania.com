@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Unlocking or changing the super password for Junos Space 17.2R1"
+title: "Unlocking or changing the super password for Junos Space 17.2, 18.X"
 description: "In the 17.2R1 release for Junos Space, the process for unlocking or changing the password for the super account has changed."
 #thumb_image: "documentation/sample-image.jpg"
 tags: [juniper, guides]
@@ -8,7 +8,12 @@ tags: [juniper, guides]
 ## Introduction
 For Junos Space and its associated applications, if you have forgotten the password to the __super__ account (or have locked yourself out of the account), you can reset the password and/or unlock the account by modifying the super user's entry in the `build_db` DB of MySQL; via the Unix CLI in Space's "debug" mode.
 
-However in release 17.2R1, the default password of the __jboss__ user (which is required in order to access the MySQL CLI in the first place) has changed. As far as I can tell, Juniper has not documented this anywhere.
+However in release 17.2R1, the default password of the __jboss__ user (which is required in order to access the MySQL CLI in the first place) has changed. ~~As far as I can tell, Juniper has not documented this anywhere.~~
+
+>**Update July 2018:**<br>
+> - Juniper have now documented this changed in a [KB article][KB] (J-net login required).
+> - This process is will also work with Junos Space releases 18.1 and 18.2.<br>
+
 
 Previously, you would access the MySQL CLI using the user __jboss__ and the password __netscreenos__:
 
@@ -21,7 +26,7 @@ Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
 mysql>
 {% endhighlight %}
 
-In Space 17.2R1, the same credentials do not work:
+In Space 17.2R1 (and above), the same credentials do not work:
 
 {% highlight shell %}
 [root@space-005056a51a72 ~]# mysql -u jboss -pnetscreenos build_db
@@ -88,10 +93,20 @@ DELETE FROM USER_IP_ADDRESS where user_id in (select id from USER where name LIK
 The super account should now be unlocked.
 
 ### Changing the super account password
-If you have forgotten the password to the super account, you can change it via the MySQL CLI. Enter the following two DB queries/commands at the `mysql>` shell prompt:
+If you have forgotten the password to the super account, you can reset it by altering the database entry for the 'super' user. The password field takes an encrypted value. __We will reset the password to the default value `juniper123`__. This will allow you to login and then change it to something more secure through the GUI.
+
+To login to the DB and change the password in one command:
 
 {% highlight shell %}
-update USER set password="<YOUR-NEW-SUPER-PASSWORD>" where name="super";
+mysql -ujboss -p$(grep mysql.jboss /etc/sysconfig/JunosSpace/pwd | awk -F= '{print $2}') build_db -e "UPDATE USER set password='ok89Nva6qHxytSHsP8AeLg==' where name='super'"
 {% endhighlight %}
 
-Replace the `<YOUR-NEW-SUPER-PASSWORD>` with the new password you want to assign to the __super__ user.
+This fetches the jboss password from the `pwd` file and executes the SQL statement to change the super user's password to `ok89Nva6qHxytSHsP8AeLg==` which represents `juniper123`
+
+
+### Finish
+You should now be able to login to the Junos Space GUI using the username `super` and password `juniper123`.
+
+__Make sure to change the super password immediately to something more secure!__
+
+[KB]:https://kb.juniper.net/InfoCenter/index?page=content&id=KB17582
