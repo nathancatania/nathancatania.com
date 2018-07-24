@@ -4,9 +4,6 @@ This is the repository that runs my personal website using [Jekyll][1] and [GitH
 
 The theme is a modified version of the [Chalk][3] theme.
 
-## TODO List
-* Comments
-
 [1]: https://www.jekyllrb.com
 [2]: https://pages.github.com
 [3]: https://github.com/nielsenramon/chalk

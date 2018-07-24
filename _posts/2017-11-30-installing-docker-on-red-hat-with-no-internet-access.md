@@ -3,6 +3,7 @@ layout: post
 title: "Installing Docker CE on Red Hat with no internet access"
 description: "The free Docker CE is not compatible with RHEL, so how can we install it, resolve dependencies, and transfer images - all on a RHEL server with no internet access?"
 #thumb_image: "documentation/sample-image.jpg"
+comments: false
 tags: [guides, docker]
 ---
 ## Introduction

@@ -3,6 +3,7 @@ layout: post
 title: "Deploying a multi-node, multi-server Kafka Cluster with Docker"
 description: "A Docker deployment of Kafka avoids the need to manually configure each broker and provides a very simple and scalable installation methodology; particularly over multiple servers."
 #thumb_image: "documentation/sample-image.jpg"
+comments: false
 tags: [guides, docker, kafka, networking]
 ---
 

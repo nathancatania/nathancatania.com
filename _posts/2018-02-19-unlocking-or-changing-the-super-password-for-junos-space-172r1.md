@@ -3,6 +3,7 @@ layout: post
 title: "Unlocking or changing the super password for Junos Space 17.2, 18.X"
 description: "In the 17.2R1 release for Junos Space, the process for unlocking or changing the password for the super account has changed."
 #thumb_image: "documentation/sample-image.jpg"
+comments: true
 tags: [juniper, guides]
 ---
 ## Introduction
