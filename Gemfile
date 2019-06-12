@@ -12,3 +12,5 @@ gem "mini_magick"
 gem "sass"
 gem "sprockets"
 gem "uglifier"
+gem 'jquery-rails'
+gem 'rails-ujs'

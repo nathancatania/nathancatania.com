@@ -1,7 +1,7 @@
-//= require webfontloader/webfontloader.js
+//= require webfontloader.js
 
 WebFont.load({
   google: {
-    families: ['Oswald:700', 'Roboto Condensed:300,400,700']
+    families: ['Muli:300,400,600,700,800,900']
   }
 });

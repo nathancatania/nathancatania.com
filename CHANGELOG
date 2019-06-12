@@ -1,0 +1,24 @@
+# Changelog
+
+## 2019-06-12
+- Changed fonts to Muli
+- Minor CSS changes (font weights, blockquotes, page width)
+- Changed avatar
+- Fixed formatting of previous post
+- Minor bio update
+
+## 2018-12-13
+- New Post: ZTP Juniper devices with Sky Enterprise
+
+## 2018-7-24
+- New Post: Connecting Juniper Sky Enterprise to Aerohive HiveManager
+- Enabled HTTPs now that it is supported by GitHub Pages 🎉
+
+## 2018-2-19
+- New Post: Unlocking or changing the super password for Junos Space 17.2
+
+## 2017-12-15
+- New Post: Deploying a multi-node, multi-server Kafka Cluster with Docker
+
+## 2017-11-30
+- New Post: Installing Docker CE on Red Hat with no internet access

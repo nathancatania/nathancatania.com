@@ -8,3 +8,5 @@ _assets/yarn/
 package-lock.json
 .idea
 _drafts/
+vendor/
+.bundle/

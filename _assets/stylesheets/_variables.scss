@@ -5,9 +5,9 @@
 // Typography
 // =============================================================================
 
-$sans-serif: "Roboto Condensed", Helvetica, Arial, sans-serif;
-$serif: "Oswald", Helvetica, Arial, sans-serif;
-$headings: "Oswald", Helvetica, Arial, sans-serif;
+$sans-serif: "Muli", Helvetica, Arial, sans-serif;
+$serif: "Muli", Helvetica, Arial, sans-serif;
+$headings: "Muli", Helvetica, Arial, sans-serif;
 $headings-weight: 700;
 $base-font-family: $sans-serif;
 $base-font-weight: 400;
@@ -29,7 +29,7 @@ $brand-warning: #f1c90b;
 // Grid
 
 $columns: 12;
-$max-width: 650px;
+$max-width: 800px;
 $gutter: 20px;
 $one-column: 100% / $columns;
 $negative-gutter: 0 - $gutter;
