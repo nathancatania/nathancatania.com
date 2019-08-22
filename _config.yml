@@ -1,13 +1,11 @@
 # Mandatory settings
-
 blog_theme: light # Or use dark
 name: Nathan Catania
-paginate: 25
 url: nathancatania.com
+paginate: 25
 
 
 # Optional settings
-
 about_enabled: false # Change to true if you wish to show an icon in the navigation that redirects to the about page
 baseurl: # eg: /blog
 discus_identifier: nathancatania
@@ -38,20 +36,18 @@ social:
   spotify: # Add your Spotify handle
   stackoverflow: # Add your Stack Overflow ID number
   steam: # Add your Steam handle
-
-
-# Important settings (change at own risk)
-
 assets:
   plugins:
     css: { autoprefixer: {}}
-    img: { optim: {}}
+    img: { optim: {jpegoptim: {strip: all}}}
   source_maps: false
   sources:
     - _assets/icons
+    - _assets/images
     - _assets/javascripts
     - _assets/stylesheets
     - _assets/yarn
+
 collections:
   my_tags:
     output: true
@@ -75,10 +71,19 @@ exclude:
   - vendor/
   - yarn.lock
   - SETUP.md
+  - node_modules/
+  - yarn-error.log
+  - .ruby-version
+  - .gitignore
+  - LICENSE
+  - .jekyll-cache/
+  - .bundle/
+  - .sass-cache/
 plugins:
   - jekyll-assets
   - jekyll-paginate
   - jekyll-sitemap
   - jemoji
+
 paginate_path: /posts/page/:num/
 permalink: posts/:slug

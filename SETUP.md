@@ -10,11 +10,20 @@ $ nano ~/.bash_profile
 
 # homebrews should always take precedence
 export PATH=/usr/local/bin:$PATH
+OR
+export PATH="/usr/local/opt/ruby/bin:$PATH
 ```
+
+Follow this:
+[https://desiredpersona.com/install-jekyll-on-macos/](https://desiredpersona.com/install-jekyll-on-macos/)
+
+You can specify a specific version of Jekyll to install:
+```
+gem install jekyll -v 3.8.6
+```
+
 5. Navigate to the project/repo directory.
-6. `bundle install`
-7. `npm run setup`
-8. `npm install`
+6. `npm run setup`
 
 ## Run & Test Locally:
 `npm run local`

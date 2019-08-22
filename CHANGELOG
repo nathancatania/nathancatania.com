@@ -1,5 +1,12 @@
 # Changelog
 
+## 2019-08-16
+- Fixed build issues with theme 🎉
+- Minor CSS changes (h1 margin, img border-radius)
+- Added CSS to style tables
+- Added optional article image above the post title
+- New Post: How to replace your PS4's HDD and upgrade to an SSD
+
 ## 2019-06-12
 - Changed fonts to Muli
 - Minor CSS changes (font weights, blockquotes, page width)

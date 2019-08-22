@@ -8,6 +8,7 @@
         {% include navigation.html %}
         <article class="article {% if site.scrollappear_enabled %}scrollappear{% endif %}">
           <header class="article-header">
+            {% if page.thumb_image %}<img class="article-image" src="{% asset '{{ page.thumb_image }}' @path %}">{% endif %}
             <h1>{{ page.title }}</h1>
             <p>{{ page.description }}</p>
             <div class="article-list-footer">

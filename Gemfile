@@ -1,16 +1,59 @@
 source "https://rubygems.org"
 
 gem "autoprefixer-rails"
+gem "crass"
 gem "html-proofer"
+gem "image_optim_bin" # Optional
+gem "image_optim_pack"
 gem "image_optim"
-gem "jekyll"
 gem "jekyll-assets"
+gem "jekyll-feed"
+gem "jekyll-gist"
+gem "jekyll-last-modified-at"
 gem "jekyll-paginate"
+gem "jekyll-redirect-from"
+gem "jekyll-seo-tag"
+gem "jekyll-seo"
 gem "jekyll-sitemap"
+gem "jekyll"
 gem "jemoji"
 gem "mini_magick"
+gem "rake"
+gem "rouge"
+gem "sanitize"
 gem "sass"
-gem "sprockets"
+gem "sprockets", "4.0.0.beta8"
 gem "uglifier"
-gem 'jquery-rails'
-gem 'rails-ujs'
+
+# Broken stuff - to be removed
+# source "https://rubygems.org"
+#
+# gem "autoprefixer-rails"
+# gem "html-proofer"
+# gem "image_optim"
+# gem "jekyll"
+# gem "jekyll-assets"
+# gem "jekyll-paginate"
+# gem "jekyll-sitemap"
+# gem "jemoji"
+# gem "mini_magick"
+# gem "rake"
+# gem "sass"
+# gem "sprockets", "~> 4.0.beta8"
+# gem "uglifier"
+#gem 'jquery-rails'
+#gem 'rails-ujs'
+# ------- diff --------
+# gem "crass"
+# gem "amp-jekyll"
+# gem "font-awesome-sass"
+# gem "image_optim_bin" # Optional
+# gem "image_optim_pack"
+# gem "jekyll-feed"
+# gem "jekyll-gist"
+# gem "jekyll-last-modified-at"
+# gem "jekyll-redirect-from"
+# gem "jekyll-seo-tag"
+# gem "jekyll-seo"
+# gem "rouge"
+# gem "sanitize"

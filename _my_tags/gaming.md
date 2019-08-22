@@ -1,0 +1,4 @@
+---
+slug: gaming
+name: Gaming
+---
