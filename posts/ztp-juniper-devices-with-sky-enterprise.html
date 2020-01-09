@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <title>Nathan Catania | Zero Touch Provisioning Juniper (Junos OS) devices with Sky Enterprise</title>
+  
+  <meta name="description" content="ZTP is a great way to start down the automation path, but is often labelled 'too hard' or 'too complex'. This guide will cover how to ZTP Juniper devices using the Sky Enterprise management platform.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Zero Touch Provisioning Juniper (Junos OS) devices with Sky Enterprise">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="nathancatania.com/posts/ztp-juniper-devices-with-sky-enterprise">
+  <meta property="og:description" content="ZTP is a great way to start down the automation path, but is often labelled 'too hard' or 'too complex'. This guide will cover how to ZTP Juniper devices using the Sky Enterprise management platform.">
+  <meta property="og:site_name" content="Nathan Catania">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="nathancatania.com/posts/ztp-juniper-devices-with-sky-enterprise">
+  <meta name="twitter:title" content="Zero Touch Provisioning Juniper (Junos OS) devices with Sky Enterprise">
+  <meta name="twitter:description" content="ZTP is a great way to start down the automation path, but is often labelled 'too hard' or 'too complex'. This guide will cover how to ZTP Juniper devices using the Sky Enterprise management platform.">
+
+  
+    <meta property="og:image" content="nathancatania.com/assets/og-image-226cb427b00014bffc4473c892a2f50e3891290cea42d16cf0e4480ef323507f.jpg">
+    <meta name="twitter:image" content="nathancatania.com/assets/og-image-226cb427b00014bffc4473c892a2f50e3891290cea42d16cf0e4480ef323507f.jpg">
+  
+
+  <link href="nathancatania.com/feed.xml" type="application/rss+xml" rel="alternate" title="Nathan Catania Last 10 blog posts" />
+
+  
+
+  
+    <link rel="icon" type="image/x-icon" href="/assets/favicon-light-0fb75e705f4c26badaa4bcdef43cb502633cccf890a2000e372ed03fb65ffdb4.ico">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon-light-3d53a961ad5a122e83b8efada7f6b8eef7586b54e4bbfc404e98401321b1aeb6.png">
+    <link rel="stylesheet" type="text/css" href="/assets/light-15926eb05714671e1f5eb979a6a709aeefc936620f110d0c80a34297ec59311c.css">
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="Nathan Catania">Nathan Catania</a>
+  <ul class="header-links">
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/nathancatania" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/nathancatania" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://hub.docker.com/r/nathancatania" rel="noreferrer noopener" target="_blank" title="Docker Hub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-docker">
+  <use href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker" xlink:href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hello@nathancatania.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            
+            <h1>Zero Touch Provisioning Juniper (Junos OS) devices with Sky Enterprise</h1>
+            <p>ZTP is a great way to start down the automation path, but is often labelled 'too hard' or 'too complex'. This guide will cover how to ZTP Juniper devices using the Sky Enterprise management platform.</p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                December 13, 2018
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  14 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+                  <a href="/tag/juniper">juniper</a>
+                
+                  <a href="/tag/guides">guides</a>
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>This guide is split into 4 Sections:</p>
+
+<ul>
+  <li><strong>Section 1</strong><br />
+A brief overview (including requirements) of ZTP on Junos platforms.</li>
+  <li><strong>Section 2</strong><br />
+A walkthrough of the ZTP process from scratch using Sky Enterprise.</li>
+  <li><strong>Section 3</strong><br />
+More advanced concepts, such as applying additional configuration or executing Operational Mode commands automatically.</li>
+  <li><strong>Section 4</strong><br />
+Troubleshooting</li>
+</ul>
+
+<hr />
+
+<h1 id="10---ztp-overview">1.0 - ZTP Overview</h1>
+<p>Arguably, the best feature of Sky Enterprise is its ability to make Zero Touch Provisioning (ZTP) of Juniper devices a breeze. You no longer need to mess around with DHCP options, nor do you need to ensure your config files are accessible via FTP.</p>
+
+<p>Sky Enterprise allows you to ZTP your devices through the concept of “ZTP Templates”. A ZTP template is the Junos configuration you wish to apply to a device, exported in XML format (instead of the normal C-like syntax of Junos), with some variables added in - allowing you to re-use the same template across multiple devices.</p>
+
+<h2 id="why-you-should-bother-with-ztp">Why you should bother with ZTP?</h2>
+<p>ZTP allows you to simply ship a device to site, install it, and plug it in – that’s it! No more pre-staging!</p>
+
+<p>The device will not only download its configuration and configure itself, but will also on-board itself and start streaming telemetry to your Sky Enterprise dashboard.</p>
+
+<p>While this is valuable for SRX and NFX devices, most people in the Juniper ecosystem will likely find it far more timesaving for deploying EX series switches in bulk.</p>
+
+<h2 id="ztp-methods">ZTP Methods</h2>
+<p>There are 2 methods of ZTP on most branch Junos devices:</p>
+
+<ol>
+  <li>Autoinstallation</li>
+  <li>Phone-Home Client</li>
+</ol>
+
+<p>Both options are typically present in the factory default config.</p>
+
+<h3 id="autoinstallation">Autoinstallation</h3>
+<p>Autoinstallation is traditional ZTP that relies on DHCP options.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">system {
+    autoinstallation {
+        traceoptions {
+            level verbose;
+            flag {
+                all;
+            }
+        }
+        interfaces {
+            ge-0/0/0 {
+                bootp;
+            }
+            ge-0/0/15 {
+                bootp;
+            }
+        }
+    }
+}</code></pre></figure>
+
+<p>Autoinstallation does not require external WAN access to provision the device, but does typically take more effort to get working.
+This guide will not discuss ZTP via the Autoinstallation method.</p>
+
+<h3 id="phone-home-client">Phone-Home Client</h3>
+<p>With the Phone-Home Client method (which both Sky Enterprise and Contrail SD-WAN use), the device will continuously call home and present its serial number to <code class="highlighter-rouge">redirect.juniper.net</code>.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">system {
+    phone-home {
+        server https://redirect.juniper.net;
+        rfc-complaint;
+    }
+}</code></pre></figure>
+
+<p>When you add a new ZTP device with Sky Enterprise, your device serial number is automatically added to the <code class="highlighter-rouge">redirect.juniper.net</code> server.</p>
+
+<p>When the device reaches <code class="highlighter-rouge">redirect.juniper.net</code>, the server checks to see if the serial number of the device is present in its database. The serial number is associated with the location (and associated certificate) the device can retrieve its configuration from - in this case, the FQDN of the bootstrap server of Sky Enterprise:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">go.oneconfig.com/restconf/data/juniper-zerotouch-bootstrap-server:devices/device=&lt;DEVICE-SERIAL-NUMBER&gt;/notification</code></pre></figure>
+
+<p>The device will then contact and present its serial number to this new server.</p>
+
+<p>Sky Enterprise will not respond with the configuration of the device until an Administrator authorizes the ZTP process within the UI - this provides an additional layer of security in case the device is lost or stolen.</p>
+
+<p>If the device serial number is not present within <code class="highlighter-rouge">redirect.juniper.net</code>, the device will not be redirected anywhere and the phone-home process will continue to loop until removed from configuration.</p>
+
+<h2 id="ztp-requirements">ZTP Requirements</h2>
+<h3 id="network-requirements">Network Requirements</h3>
+<p>As you won’t be pre-staging your devices, they will need to use DHCP to obtain network settings and perform the initial connection to complete the ZTP process.</p>
+
+<p>The devices require:</p>
+<ul>
+  <li>IP address</li>
+  <li>Default Route</li>
+  <li>DNS server(s).</li>
+</ul>
+
+<p>DNS is especially important, as without it, the device will not be able to resolve <code class="highlighter-rouge">redirect.juniper.net</code>; causing ZTP to fail.</p>
+
+<h3 id="software-requirements">Software Requirements</h3>
+<p>For the phone-home client to be present in the factory default configuration, the minimum software requirements are:</p>
+<ul>
+  <li><strong>SRX devices:</strong> Junos 15.1X49-D110 or above.</li>
+  <li><strong>EX devices:</strong> Junos 18.2R1 or above (18.3R1 or above for Contrail SD-WAN 5.0)</li>
+</ul>
+
+<h3 id="cabling-requirements">Cabling Requirements</h3>
+<ul>
+  <li>EX devices will automatically obtain a DHCP lease at boot via the Out-of-Band Management Port on the <code class="highlighter-rouge">vme.0</code> interface.</li>
+  <li>SRX devices will automatically obtain a DHCP lease at boot via port <code class="highlighter-rouge">ge-0/0/0</code> for in-band management, and <code class="highlighter-rouge">fxp0</code> (MGMT Port) for Out-of-Band management.</li>
+  <li>The 4G/LTE mPIM can also be used for SRX ZTP, as this will (in most cases) automatically obtain IP connectivity from the carrier.</li>
+</ul>
+
+<hr />
+
+<h1 id="20---zero-touch-provisioning-ztp-with-sky-enterprise">2.0 - Zero Touch Provisioning (ZTP) with Sky Enterprise</h1>
+<p>This section will walk through the process of creating a ZTP template, loading it into Sky Enterprise, and using it provision a new device.</p>
+
+<p>Baseline example ZTP templates are provided as a starting point.</p>
+
+<h2 id="ztp-templates">ZTP Templates</h2>
+<p>A ZTP template is the configuration you wish to provision on a device (or group of devices), slightly modified with variables to enable it to be re-used.</p>
+
+<p>Sky Enterprise requires that ZTP templates be in XML format.</p>
+
+<p>The process for creating a ZTP template from scratch is as follows:</p>
+
+<ol>
+  <li>Create your required config in Junos.</li>
+  <li>Export the config in XML format and copy it to a text-editor (or into the example template above).</li>
+  <li>Add variables where required (in Jinja2 format).</li>
+  <li>Paste the template into Sky Enterprise.</li>
+</ol>
+
+<h3 id="example-ztp-templates">Example ZTP Templates</h3>
+<p>The example templates below contain the required configuration for the device to function with Sky Enterprise. You can add your own XML config in freely.</p>
+
+<ul>
+  <li><a href="https://github.com/nathancatania/Junos-Notes/blob/master/SkyEnterprise/ZTP/srx-ztp-template.xml">SRX Example ZTP Template</a></li>
+  <li><a href="https://github.com/nathancatania/Junos-Notes/blob/master/SkyEnterprise/ZTP/ex-ztp-template.xml">EX Example ZTP Template</a></li>
+</ul>
+
+<h3 id="obtaining-your-xml-configuration">Obtaining your XML Configuration</h3>
+<p>Do not try and create your own XML config from scratch - create the config on a Junos device then export it as XML.</p>
+
+<p>To display your config as XML in Junos and save it to file:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">show configuration | display xml | save /tmp/xmlconfig.xml</code></pre></figure>
+
+<p>Get the saved file from Junos:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">scp username@device-hostname:/tmp/xmlconfig.xml ~/path/to/save/file/to</code></pre></figure>
+
+<h3 id="overriding-existing-configuration">Overriding Existing Configuration</h3>
+<p>Currently SkyEnterprise cannot override any existing configuration (ie: the factory default configuration).</p>
+
+<p>The current workaround is to delete the section of config you wish to override, and then re-add your new config.</p>
+
+<p>To delete sections of config in XML, add the <code class="highlighter-rouge">delete</code> parameter to a parent XML tag. For example:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;device</span> <span class="na">xmlns=</span><span class="s">"http://juniper.net/zerotouch-bootstrap-server"</span><span class="nt">&gt;</span>
+  ...
+  <span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;config&gt;</span>
+      <span class="nt">&lt;configuration&gt;</span>
+         ...
+         ...
+         <span class="nt">&lt;security</span> <span class="na">delete=</span><span class="s">"delete"</span><span class="nt">/&gt;</span>
+         <span class="nt">&lt;security&gt;</span>
+            <span class="nt">&lt;log&gt;</span>
+               <span class="nt">&lt;mode&gt;</span>stream<span class="nt">&lt;/mode&gt;</span>
+               <span class="nt">&lt;report&gt;&lt;/report&gt;</span>
+            <span class="nt">&lt;/log&gt;</span>
+            <span class="nt">&lt;pki&gt;</span>
+               ...
+            <span class="nt">&lt;/pki&gt;</span>
+         <span class="nt">&lt;/security&gt;</span>
+         ...
+         ...
+      <span class="nt">&lt;/configuration&gt;</span>
+    <span class="nt">&lt;/config&gt;</span>
+  <span class="nt">&lt;/configuration&gt;</span>
+
+<span class="nt">&lt;/device&gt;</span></code></pre></figure>
+
+<p>Sections of the snippet above have been omitted for brevity.</p>
+
+<p>In the example above, everything under the original <code class="highlighter-rouge">security</code> section of the config is deleted. A user defined <code class="highlighter-rouge">security</code> config is then added.</p>
+
+<h3 id="variables">Variables</h3>
+<p>There wouldn’t be much point to ZTP if the same hardcoded config had to be used for every device. Likewise, it would be tedious to have to upload a different config for every device you wish to provision.</p>
+
+<p>The answer to this is <strong>Variables</strong>.</p>
+
+<p>Replacing hardcoded values in your ZTP template with variables allows the template to be used across multiple devices. When assigning a specific ZTP template to a device, Sky Enterprise will prompt you to fill in a value for all variables detected in the template. When a device contacts Sky Enterprise and requests its config, Sky Enterprise renders the template with the variable values given and pushes the config to the device.</p>
+
+<p>Using this method, each device that uses the same template will have its own unique configuration.</p>
+
+<h4 id="format">Format</h4>
+<p>Sky Enterprise uses Jinja templating to render ZTP templates.</p>
+
+<p>To create a variable, enclose the name of the variable within <strong>two</strong> curly brackets. For example:</p>
+
+<figure class="highlight"><pre><code class="language-xml-jinja" data-lang="xml+jinja">{{ management_ip_and_cidr }}</code></pre></figure>
+
+<p>When you assign the template to a device, Sky Enterprise will prompt you to fill in a value for the <code class="highlighter-rouge">management_ip_and_cidr</code> variable.</p>
+
+<h4 id="rules-and-restrictions">Rules and Restrictions</h4>
+<p>When naming your variables, remember KISS (Keep It Simple Stupid):</p>
+<ul>
+  <li>Do not use special characters or symbols other than underscore _</li>
+  <li>Do not use spaces.</li>
+  <li>Numbers are ok, but try not to start the variable with a number.</li>
+  <li>Be descriptive so you can remember what the variable is for.</li>
+  <li>Consider using two variables for ip/cidr notation,<br />eg: <code class="highlighter-rouge">{{ ip }}/{{ cidr }}</code></li>
+  <li>Do not use a Sky Enterprise Special or Reserved variable names (see below).</li>
+</ul>
+
+<h4 id="sky-enterprise-reserved-variables">Sky Enterprise Reserved Variables</h4>
+<p>You should ensure that any ZTP template you create includes the configuration required for the device to communicate back to Sky Enterprise.</p>
+
+<p>NB: The example ZTP templates from the section above already include this.</p>
+
+<p>The following variables are reserved by Sky Enterprise and are automatically pre-filled when rendering the configuration from the template.</p>
+
+<figure class="highlight"><pre><code class="language-xml-jinja" data-lang="xml+jinja">{{ ztp_username }}
+{{ ztp_password }}
+{{ ztp_host_id }}
+{{ ztp_secret }}</code></pre></figure>
+
+<h2 id="example-ztp-template-with-variables">Example ZTP Template with Variables</h2>
+<p>The config snippet below describes how to use the variables within a template. You can view the full example here.</p>
+
+<p>This example config is for an SRX device, and simply sets the hostname, DNS nameservers, <code class="highlighter-rouge">fxp0</code> management interface, and a default route to the gateway. Parts of the config (like the root password, and Sky Enterprise specific config) have been omitted.</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;device</span> <span class="na">xmlns=</span><span class="s">"http://juniper.net/zerotouch-bootstrap-server"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;unique-id&gt;</span>{{ serial }}<span class="nt">&lt;/unique-id&gt;</span>
+  <span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;config&gt;</span>
+      <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;system&gt;</span>
+          <span class="nt">&lt;host-name&gt;</span>{{ hostname }}<span class="nt">&lt;/host-name&gt;</span>
+          <span class="nt">&lt;name-server&gt;</span>
+            <span class="nt">&lt;name&gt;</span>{{ dns_server_1 }}<span class="nt">&lt;/name&gt;</span>
+          <span class="nt">&lt;/name-server&gt;</span>
+          <span class="nt">&lt;name-server&gt;</span>
+            <span class="nt">&lt;name&gt;</span>{{ dns_server_2 }}<span class="nt">&lt;/name&gt;</span>
+          <span class="nt">&lt;/name-server&gt;</span>
+        <span class="nt">&lt;/system&gt;</span>
+        <span class="nt">&lt;interfaces&gt;</span>
+           <span class="nt">&lt;interface</span> <span class="na">delete=</span><span class="s">"delete"</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;name&gt;</span>fxp0<span class="nt">&lt;/name&gt;</span>
+           <span class="nt">&lt;/interface&gt;</span>
+           <span class="nt">&lt;interface&gt;</span>
+              <span class="nt">&lt;name&gt;</span>fxp0<span class="nt">&lt;/name&gt;</span>
+              <span class="nt">&lt;unit&gt;</span>
+                 <span class="nt">&lt;name&gt;</span>0<span class="nt">&lt;/name&gt;</span>
+                 <span class="nt">&lt;family&gt;</span>
+                    <span class="nt">&lt;inet&gt;</span>
+                       <span class="nt">&lt;address&gt;</span>
+                          <span class="nt">&lt;name&gt;</span>{{ oob_management_ip_and_cidr }}<span class="nt">&lt;/name&gt;</span>
+                       <span class="nt">&lt;/address&gt;</span>
+                    <span class="nt">&lt;/inet&gt;</span>
+                 <span class="nt">&lt;/family&gt;</span>
+              <span class="nt">&lt;/unit&gt;</span>
+           <span class="nt">&lt;/interface&gt;</span>
+        <span class="nt">&lt;/interfaces&gt;</span>
+        <span class="nt">&lt;routing-options&gt;</span>
+           <span class="nt">&lt;static&gt;</span>
+              <span class="nt">&lt;route&gt;</span>
+                 <span class="nt">&lt;name&gt;</span>0.0.0.0/0<span class="nt">&lt;/name&gt;</span>
+                 <span class="nt">&lt;next-hop&gt;</span>{{ gateway_ip }}<span class="nt">&lt;/next-hop&gt;</span>
+              <span class="nt">&lt;/route&gt;</span>
+            <span class="nt">&lt;/static&gt;</span>
+        <span class="nt">&lt;/routing-options&gt;</span>
+      <span class="nt">&lt;/configuration&gt;</span>
+    <span class="nt">&lt;/config&gt;</span>
+  <span class="nt">&lt;/configuration&gt;</span>
+<span class="nt">&lt;/device&gt;</span></code></pre></figure>
+
+<p>Now, when deploying this template to SkyEnterprise, we will be prompted to fill in values for each of the above variables.</p>
+
+<p>Sky Enterprise will then render the template with these variables and push the config to the device when it contacts the phone-home server.</p>
+
+<p>Note that the <code class="highlighter-rouge">fxp0</code> interface is first deleted and then re-added via the template config. This is in case there is an existing <code class="highlighter-rouge">fxp0</code> configuration (as is the case with most factory default configs).</p>
+
+<h2 id="loading-the-template-into-sky-enterprise">Loading the Template into Sky Enterprise</h2>
+<p>Once you have your template completed, you’re ready to load it into Sky Enterprise.</p>
+
+<p>From the Sky Enterprise UI, navigate to <code class="highlighter-rouge">CONFIGURATION</code> &gt; <code class="highlighter-rouge">ZTP</code>:</p>
+
+<p><a href="/assets/2018-12-13/ztp-skyenterprise-1-08b8b0626362b8795131d25eb8693eeec95b37200031cbc61d52907db065a7ac.png">
+  <img src="/assets/2018-12-13/ztp-skyenterprise-1-08b8b0626362b8795131d25eb8693eeec95b37200031cbc61d52907db065a7ac.png" alt="Navigate to the ZTP tab under Configuration" class="zooming" data-rjs="/assets/2018-12-13/ztp-skyenterprise-1-08b8b0626362b8795131d25eb8693eeec95b37200031cbc61d52907db065a7ac.png" data-zooming-width="1503" data-zooming-height="1081" />
+</a></p>
+
+<p>Click <code class="highlighter-rouge">Add ZTP Template</code>. Here you will give your template a name, description, and paste the entire ZTP template (in XML) that you created above.</p>
+
+<p><a href="/assets/2018-12-13/ztp-skyenterprise-2-c86e42838eea60a86082f44b62b42449e6e5f448fd87458d4963fa89c470a480.png">
+  <img src="/assets/2018-12-13/ztp-skyenterprise-2-c86e42838eea60a86082f44b62b42449e6e5f448fd87458d4963fa89c470a480.png" alt="Paste in your ZTP template and give it a name" class="zooming" data-rjs="/assets/2018-12-13/ztp-skyenterprise-2-c86e42838eea60a86082f44b62b42449e6e5f448fd87458d4963fa89c470a480.png" data-zooming-width="1153" data-zooming-height="933" />
+</a></p>
+
+<h2 id="provisioning-a-new-device">Provisioning a New Device</h2>
+<p>Next, you will use your new template to Zero Touch a new device.</p>
+
+<p>From the UI, navigate to <code class="highlighter-rouge">HOME</code> &gt; <code class="highlighter-rouge">DEVICES</code>:</p>
+
+<p><a href="/assets/2018-12-13/ztp-skyenterprise-3-6d28b4961eb7e97ad3fa11377b1bf600680653764e22b8ad5d712858201f34e0.png">
+  <img src="/assets/2018-12-13/ztp-skyenterprise-3-6d28b4961eb7e97ad3fa11377b1bf600680653764e22b8ad5d712858201f34e0.png" alt="To add a new device, navigate to the Devices tab under Home" class="zooming" data-rjs="/assets/2018-12-13/ztp-skyenterprise-3-6d28b4961eb7e97ad3fa11377b1bf600680653764e22b8ad5d712858201f34e0.png" data-zooming-width="1496" data-zooming-height="1016" />
+</a></p>
+
+<p>Click <code class="highlighter-rouge">Add Device</code>:</p>
+
+<ol>
+  <li>Give your device a name (this will be displayed in the UI)</li>
+  <li>Select whether it is a firewall (SRX), switch (EX), or NFX device.</li>
+  <li>Select <code class="highlighter-rouge">Create ZTP Device</code></li>
+  <li>Populate the device Serial Number. <strong>This is added to the Juniper redirect server.</strong></li>
+  <li>Select the ZTP template to be used.</li>
+  <li>Populate any variables.</li>
+  <li>Click <code class="highlighter-rouge">Create Device</code></li>
+</ol>
+
+<p><a href="/assets/2018-12-13/ztp-skyenterprise-4-349486e98f9aadf743f7df10a72976e411c67b1bc45f24696860af2b5a0d0ecf.png">
+  <img src="/assets/2018-12-13/ztp-skyenterprise-4-349486e98f9aadf743f7df10a72976e411c67b1bc45f24696860af2b5a0d0ecf.png" alt="Populate details for your ZTP device" class="zooming" data-rjs="/assets/2018-12-13/ztp-skyenterprise-4-349486e98f9aadf743f7df10a72976e411c67b1bc45f24696860af2b5a0d0ecf.png" data-zooming-width="689" data-zooming-height="1330" />
+</a></p>
+
+<p><strong>NB: It is VERY important that the Serial Number you enter is correct.</strong><br />
+The device will not be able to obtain its configuration otherwise as the correct serial will not be present in the redirect server.</p>
+
+<h2 id="authorizing-the-device">Authorizing the Device</h2>
+<blockquote>
+  <p>And now we play the waiting game…</p>
+</blockquote>
+
+<p>Sky Enterprise is usually quite quick about adding the Serial Number to the redirect server, but this can take up to 15 minutes.</p>
+
+<p>Navigate back to <code class="highlighter-rouge">CONFIGURATION</code> &gt; <code class="highlighter-rouge">ZTP</code>. Your device’s status is reflected here. If the device has successfully contacted Sky Enterprise, the state field should be <code class="highlighter-rouge">Authorization Required</code>. For security reasons, Sky Enterprise will not push the configuration to the device until you or another admin authorizes the ZTP process.</p>
+
+<p>To initiate the ZTP process, click the menu icon next to the device name, and select <code class="highlighter-rouge">Authorize</code>.</p>
+
+<p><a href="/assets/2018-12-13/ztp-skyenterprise-5-d0ca0f5a90010a5850795de737a17cd4954a2a851cb780f174b41bb60a18c103.png">
+  <img src="/assets/2018-12-13/ztp-skyenterprise-5-d0ca0f5a90010a5850795de737a17cd4954a2a851cb780f174b41bb60a18c103.png" alt="Authorize the ZTP process" class="zooming" data-rjs="/assets/2018-12-13/ztp-skyenterprise-5-d0ca0f5a90010a5850795de737a17cd4954a2a851cb780f174b41bb60a18c103.png" data-zooming-width="1496" data-zooming-height="891" />
+</a></p>
+
+<p>If you have email notifications configured, Sky Enterprise will notify you that a device has requested authorization to ZTP.</p>
+
+<p><a href="/assets/2018-12-13/ztp-skyenterprise-6-e0172a8ec0b41fde61a11101988add4706ec420d466ccf756d9afb265268a6d1.png">
+  <img src="/assets/2018-12-13/ztp-skyenterprise-6-e0172a8ec0b41fde61a11101988add4706ec420d466ccf756d9afb265268a6d1.png" alt="Email notification for ZTP" class="zooming" data-rjs="/assets/2018-12-13/ztp-skyenterprise-6-e0172a8ec0b41fde61a11101988add4706ec420d466ccf756d9afb265268a6d1.png" data-zooming-width="1727" data-zooming-height="675" />
+</a></p>
+
+<p>If the ZTP process completes successfully, your device should appear under <code class="highlighter-rouge">HOME</code> &gt; <code class="highlighter-rouge">DEVICES</code> as <code class="highlighter-rouge">ONLINE</code>.</p>
+
+<p><strong>Congratulations! You just Zero Touched a device!</strong></p>
+
+<p><em>Not working? See Section 4.0 for Troubleshooting tips.</em></p>
+
+<hr />
+
+<h1 id="30---operational-mode-commands-and-stage-2-configuration">3.0 - Operational Mode Commands and Stage 2 Configuration</h1>
+<p>Sky Enterprise does not allow you to run operational mode commands as part of the ZTP process. Likewise, there is no Stage 2 configuration permitted.</p>
+
+<p>Only a single rendered configuration can be pushed as part of ZTP per device. This raises several questions, like:</p>
+
+<ol>
+  <li>How do you manage PKI for features such as VPNs and SSL Proxy?</li>
+  <li>How do you run enrollment commands or OP scripts for features like Sky ATP?</li>
+  <li>How do you run HA commands for Stacking or Clustering?</li>
+</ol>
+
+<p>All of these examples require Operational Mode commands such as as<br /><code class="highlighter-rouge">request chassis cluster ...</code> or <code class="highlighter-rouge">request security ...</code>.</p>
+
+<p>Sky Enterprise supports some of this functionality through its UI - like Virtual Chassis/Stacking config. You can additionally run commands through the ‘Virtual CLI’ of Sky Enterprise UI. However, both of these are still manual processes.</p>
+
+<p>What if you wanted to automate this as part of the ZTP process?<br />
+Event Policies are the answer!</p>
+
+<h2 id="event-policies--triggering-events">Event Policies &amp; Triggering Events</h2>
+<p>An Event Policy can be used to trigger the completion of additional tasks after the ZTP process has completed. For example, running Operational Mode commands, or running a script to apply additional (Stage 2) config.</p>
+
+<p>You would include the Event Policy configuration as part of the initial ZTP template used to provision your device.</p>
+
+<p>A good use case for this is PKI management on SRX. You can use an Event Policy to trigger the <code class="highlighter-rouge">request security pki</code> commands to obtain certificates from a CA and enroll them on the device in order to bring up VPNs or utilize SSL Proxy.</p>
+
+<h2 id="find-an-event-to-trigger-event-policy">Find an Event to Trigger Event Policy</h2>
+<p>First, locate an appropriate event (usually a Syslog event) to trigger your Event Policy.</p>
+
+<p>To obtain a complete list of all events that a policy can be triggered with, use the following command in Configuration Mode (this might be slow):</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">set event-options policy test-policy1 events ?</code></pre></figure>
+
+<p>The <code class="highlighter-rouge">?</code> at the end of the command will load the complete list of all event triggers.</p>
+
+<p>Ideally, you want to pick an event that would not be encountered again once the required commands have been run (or Stage 2 config applied).</p>
+
+<p>For the example mentioned in the section above, if we try and bring up an IPsec VPN without any of the required PKI present, we will see the event <code class="highlighter-rouge">pkid_no_keypair</code> in the messages log. We can use this as an Event Policy trigger event.</p>
+
+<p>A good method of finding events that you can trigger on is to apply your config to a test device, and watch the <code class="highlighter-rouge">messages</code> log to see what events/warnings/errors occur. You can’t trigger on everything here (the event must be in the list obtained above), but it is a good starting point to determine what issues your device is having as a result of not running the appropriate commands.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">show log messages | last 50</code></pre></figure>
+
+<h2 id="configuring-an-event-policy">Configuring an Event Policy</h2>
+<p>The following is an example of an Event Policy:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">event-options {
+    policy ca_request {
+        events pkid_no_keypair;
+        then {
+            execute-commands {
+                commands {
+                    "op url https://raw.githubusercontent.com/nathancatania/Junos-Notes/master/POCs/SDWAN_Lite/enrol.slax";
+                }
+            }
+        }
+    }
+}</code></pre></figure>
+
+<p>This policy will execute on the <code class="highlighter-rouge">pkid_no_keypair</code> event, and will run a remote SLAX script, which in itself will run multiple Operational Mode commands.</p>
+
+<p>You do not need to run a script to execute commands - you can set the Event Policy to run Operational Mode commands directly.</p>
+
+<p>There is a small caveat to this:
+<br />Commands in the Event Policy are bound by a character limit. If your command exceeds the limit, the policy will not commit. The workaround to this is to run the command via a script.</p>
+
+<p>If you examine the script above, you will see that it runs 3x Operational Mode commands:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">request security pki ca-certificate enroll ca-profile sdwan-profile
+
+request security pki generate-key-pair certificate-id sdwan-local
+
+request security pki local-certificate enroll ca-profile sdwan-profile certificate-id sdwan-local domain-name juniper.example email ncatania@juniper.example ip-address 10.20.30.2 subject DC=juniper.example,CN=srxce1,OU=engineering,O=juniper,L=melbourne,ST=australia,C=au challenge-password E2B42DC325CA34D0</code></pre></figure>
+
+<p>The last command exceeds the character limit; hence a script is used to run it instead.</p>
+
+<p>You can get creative with your Event Policies, including applying additional configuration to your devices. The trick is to finding the correct event to trigger on.</p>
+
+<h2 id="event-policy-caveats">Event Policy Caveats</h2>
+<h3 id="continuous-policy-execution">Continuous Policy Execution</h3>
+<p>If you are worried about your Event Policy continuously executing, you can use it to trigger additional config that has it remove itself after doing what it needs to do.</p>
+
+<h3 id="script-privacy">Script Privacy</h3>
+<p>Any script that you execute will need to be hosted remotely, as you cannot add files to the device as part of the ZTP process.</p>
+
+<p>In the case of SRX and NFX ZTP, you could include a PSK IPsec VPN in your initial ZTP config that allows the device to reach the remote script in your internal network. This ensures you don’t have to host your script publicly if it contains sensitive information.</p>
+
+<p>For EX switches, the device should be able to reach your internal network through whichever firewall or gateway it is connected to.</p>
+
+<hr />
+
+<h1 id="40---troubleshooting">4.0 - Troubleshooting</h1>
+<h2 id="checking-logs">Checking Logs</h2>
+<p>If you find you are having issues with the ZTP process, examining the <code class="highlighter-rouge">messages</code> log can assist with troubleshooting:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">show log messages | match phone-home | last 50</code></pre></figure>
+
+<p>For more in-depth detail, you can modify the phone-home client to enable <code class="highlighter-rouge">traceoptions</code> (AKA debug logging):</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">set system phone-home traceoptions flag all
+set system phone-home traceoptions file phc.log</code></pre></figure>
+
+<p>This will log detailed output from the phone-home client to a log file called <code class="highlighter-rouge">phc.log</code>. To examine this file:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">show log phc.log | last</code></pre></figure>
+
+<h2 id="failed-configuration">Failed Configuration</h2>
+<p>If your configuration failed to apply, you will see something like this in the <code class="highlighter-rouge">messages</code> log:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">root@srx340&gt; show log messages | last
+[...]
+May 14 02:17:29  srx340 phone-home: phcd_platform_junos_commit: Read:error: configuration check-out failed
+May 14 02:17:29  srx340 phone-home: phcd_platform_junos_apply_config: vnf_name:Local config failed!
+May 14 02:17:29  srx340 phone-home: phcd_act_download_cfg: Failed to apply received configuration
+May 14 02:17:29  srx340 phone-home: The stage1 configuration failed to committed on the device</code></pre></figure>
+
+<p>Looking further up the log, or examining the traceoptions log from the phone-home client, will usually reveal the reason as to why the configuration failed.</p>
+
+<p>This is usually due to a malformed or invalid XML config.</p>
+
+<h2 id="srx-troubleshooting">SRX Troubleshooting</h2>
+<p>The SRX has a few quirks that may cause issues for you when attempting ZTP.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">******
+May 14 02:17:29  srx340 phone-home: phcd_platform_junos_commit: Read:error: AUTHENTICATION service may not be de-configured while clients are present. Please clear bindings
+******
+May 14 02:17:29  srx340 phone-home: phcd_platform_junos_commit: Read:error: configuration check-out failed
+May 14 02:17:29  srx340 phone-home: phcd_platform_junos_apply_config: vnf_name:Local config failed!
+May 14 02:17:29  srx340 phone-home: phcd_act_download_cfg: Failed to apply received configuration
+May 14 02:17:29  srx340 phone-home: The stage1 configuration failed to committed on the device</code></pre></figure>
+
+<p>Note the first line in the log. With the factory default config, branch SRX devices have a DHCP server configured on <code class="highlighter-rouge">ge-0/0/0.0</code>. If you attempt to ZTP the device via this port, and remove the DHCP server config as part of your Stage 1 config, the deployment may fail. The device will not let you remove the the DHCP server settings as long as the port is in use.</p>
+
+<p>If you hit this issue, as a workaround try to ZTP with LTE or a different port - such as <code class="highlighter-rouge">fxp0</code>. Failing that, leave the DHCP server configuration intact and remove it after the ZTP process completes.</p>
+
+          </div>
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=Zero+Touch+Provisioning+Juniper+(Junos+OS)+devices+with+Sky+Enterprise%20-%20nathancatania.com/posts/ztp-juniper-devices-with-sky-enterprise" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=nathancatania.com/posts/ztp-juniper-devices-with-sky-enterprise" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=nathancatania.com/posts/ztp-juniper-devices-with-sky-enterprise" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"/></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://nathancatania.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    &copy; 2020, Nathan Catania<br>
+    <small>Created with Jekyll using a modified version of the <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Chalk">Chalk</a> theme.</small>
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-91639797-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-91639797-1');
+  </script>
+
+
+<script src="/assets/vendor-a17007ee4932127a9a9d73085a673502b9a053b59724ab37b9725f9081083c91.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-bd1108a48273b097bc65b46c563e1992ee938e8e2232393c7fe5ea4abcf80536.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+</body>
+</html>

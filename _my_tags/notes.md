@@ -1,4 +1,0 @@
----
-slug: notes
-name: Notes
----

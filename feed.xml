@@ -1,20 +1,90 @@
----
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="https://www.w3.org/2005/Atom" xmlns:dc="https://purl.org/dc/elements/1.1/">
   <channel>
-    <title>{{ site.name | xml_escape }}</title>
-    <description>{% if site.description %}{{ site.description | xml_escape }}{% endif %}</description>
-    <link>{{ site.url }}</link>
-    <atom:link href="{{ page.path | absolute_url }}" rel="self" type="application/rss+xml" />
-    {% for post in site.posts limit:10 %}
+    <title>Nathan Catania</title>
+    <description></description>
+    <link>nathancatania.com</link>
+    <atom:link href="nathancatania.com/feed.xml" rel="self" type="application/rss+xml" />
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.description | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ post.url | absolute_url }}</link>
-        <guid isPermaLink="true">{{ post.url | absolute_url }}</guid>
+        <title>Deploying ZPA ZEN Connectors</title>
+        <description>These notes will cover how to deploy a ZEN Connector for Zscaler Private Access (ZPA)</description>
+        <pubDate>Sun, 05 Jan 2020 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/deploying-zpa-zen-connectors</link>
+        <guid isPermaLink="true">nathancatania.com/posts/deploying-zpa-zen-connectors</guid>
       </item>
-    {% endfor %}
+    
+      <item>
+        <title>Configuring Zscaler Private Access (ZPA) to use Azure AD</title>
+        <description>Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Private Access (ZPA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.</description>
+        <pubDate>Thu, 02 Jan 2020 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/configuring-zscaler-zpa-to-use-azure-ad</link>
+        <guid isPermaLink="true">nathancatania.com/posts/configuring-zscaler-zpa-to-use-azure-ad</guid>
+      </item>
+    
+      <item>
+        <title>Configuring Zscaler Internet Access (ZIA) to use Azure AD</title>
+        <description>Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Internet Access (ZIA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.</description>
+        <pubDate>Wed, 01 Jan 2020 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/configuring-zscaler-zia-to-use-azure-ad</link>
+        <guid isPermaLink="true">nathancatania.com/posts/configuring-zscaler-zia-to-use-azure-ad</guid>
+      </item>
+    
+      <item>
+        <title>Set up Azure Active Directory (Azure AD) free for your Homelab</title>
+        <description>Configure the free version of Azure AD for your lab environment using your own domain name.</description>
+        <pubDate>Tue, 31 Dec 2019 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/set-up-azure-active-directory-for-your-homelab</link>
+        <guid isPermaLink="true">nathancatania.com/posts/set-up-azure-active-directory-for-your-homelab</guid>
+      </item>
+    
+      <item>
+        <title>Deploying Windows Server with an Azure Free Account</title>
+        <description>Microsoft allow you one free Windows B1s VM for 12 months as part of the free Azure account. This guide will show you how to deploy Windows Server for lab use within the limits of the free tier.</description>
+        <pubDate>Mon, 30 Dec 2019 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/deploying-windows-server-2019-with-an-azure-free-account</link>
+        <guid isPermaLink="true">nathancatania.com/posts/deploying-windows-server-2019-with-an-azure-free-account</guid>
+      </item>
+    
+      <item>
+        <title>How to replace your PS4's HDD and upgrade to an SSD</title>
+        <description>Swapping your PS4's Hard Drive (HDD) out for a Solid State Drive (SSD) is a great way to improve performance and breathe new life into your console.</description>
+        <pubDate>Fri, 16 Aug 2019 00:00:00 +1000</pubDate>
+        <link>nathancatania.com/posts/upgrade-your-ps4-to-an-ssd</link>
+        <guid isPermaLink="true">nathancatania.com/posts/upgrade-your-ps4-to-an-ssd</guid>
+      </item>
+    
+      <item>
+        <title>Zero Touch Provisioning Juniper (Junos OS) devices with Sky Enterprise</title>
+        <description>ZTP is a great way to start down the automation path, but is often labelled 'too hard' or 'too complex'. This guide will cover how to ZTP Juniper devices using the Sky Enterprise management platform.</description>
+        <pubDate>Thu, 13 Dec 2018 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/ztp-juniper-devices-with-sky-enterprise</link>
+        <guid isPermaLink="true">nathancatania.com/posts/ztp-juniper-devices-with-sky-enterprise</guid>
+      </item>
+    
+      <item>
+        <title>Connecting Juniper Sky Enterprise to Aerohive HiveManager</title>
+        <description>Sky Enterprise can monitor your Aerohive APs, but documentation on how to do so is a bit hard to find. This post will explain how to link Sky Enterprise to HiveManager so that you can monitor your Aerohive APs from within Sky Enterprise.</description>
+        <pubDate>Tue, 24 Jul 2018 00:00:00 +1000</pubDate>
+        <link>nathancatania.com/posts/connecting-skyenterprise-to-aerohive-hivemanager</link>
+        <guid isPermaLink="true">nathancatania.com/posts/connecting-skyenterprise-to-aerohive-hivemanager</guid>
+      </item>
+    
+      <item>
+        <title>Unlocking or changing the super password for Junos Space 17.2, 18.X</title>
+        <description>In the 17.2R1 release for Junos Space, the process for unlocking or changing the password for the super account has changed.</description>
+        <pubDate>Mon, 19 Feb 2018 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/unlocking-or-changing-the-super-password-for-junos-space-172r1</link>
+        <guid isPermaLink="true">nathancatania.com/posts/unlocking-or-changing-the-super-password-for-junos-space-172r1</guid>
+      </item>
+    
+      <item>
+        <title>Deploying a multi-node, multi-server Kafka Cluster with Docker</title>
+        <description>A Docker deployment of Kafka avoids the need to manually configure each broker and provides a very simple and scalable installation methodology; particularly over multiple servers.</description>
+        <pubDate>Fri, 15 Dec 2017 00:00:00 +1100</pubDate>
+        <link>nathancatania.com/posts/deploying-a-multi-node-kafka-cluster-with-docker</link>
+        <guid isPermaLink="true">nathancatania.com/posts/deploying-a-multi-node-kafka-cluster-with-docker</guid>
+      </item>
+    
   </channel>
 </rss>

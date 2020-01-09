@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <title>Nathan Catania | Configuring Zscaler Private Access (ZPA) to use Azure AD</title>
+  
+  <meta name="description" content="Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Private Access (ZPA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Configuring Zscaler Private Access (ZPA) to use Azure AD">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="nathancatania.com/posts/configuring-zscaler-zpa-to-use-azure-ad">
+  <meta property="og:description" content="Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Private Access (ZPA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.">
+  <meta property="og:site_name" content="Nathan Catania">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="nathancatania.com/posts/configuring-zscaler-zpa-to-use-azure-ad">
+  <meta name="twitter:title" content="Configuring Zscaler Private Access (ZPA) to use Azure AD">
+  <meta name="twitter:description" content="Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Private Access (ZPA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.">
+
+  
+    
+      <meta property="og:image" content="nathancatania.com/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/banner-25bc607c2b7cbebce4ac497b8d111ed330c87a88de5cbf432a801604bb9f7b2f.png">
+      <meta name="twitter:image" content="nathancatania.com/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/banner-25bc607c2b7cbebce4ac497b8d111ed330c87a88de5cbf432a801604bb9f7b2f.png">
+    
+  
+
+  <link href="nathancatania.com/feed.xml" type="application/rss+xml" rel="alternate" title="Nathan Catania Last 10 blog posts" />
+
+  
+
+  
+    <link rel="icon" type="image/x-icon" href="/assets/favicon-light-0fb75e705f4c26badaa4bcdef43cb502633cccf890a2000e372ed03fb65ffdb4.ico">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon-light-3d53a961ad5a122e83b8efada7f6b8eef7586b54e4bbfc404e98401321b1aeb6.png">
+    <link rel="stylesheet" type="text/css" href="/assets/light-15926eb05714671e1f5eb979a6a709aeefc936620f110d0c80a34297ec59311c.css">
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="Nathan Catania">Nathan Catania</a>
+  <ul class="header-links">
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/nathancatania" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/nathancatania" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://hub.docker.com/r/nathancatania" rel="noreferrer noopener" target="_blank" title="Docker Hub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-docker">
+  <use href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker" xlink:href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hello@nathancatania.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <img class="article-image" src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/banner-25bc607c2b7cbebce4ac497b8d111ed330c87a88de5cbf432a801604bb9f7b2f.png">
+            <h1>Configuring Zscaler Private Access (ZPA) to use Azure AD</h1>
+            <p>Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Private Access (ZPA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.</p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                January 2, 2020
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  6 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+                  <a href="/tag/azure">azure</a>
+                
+                  <a href="/tag/zscaler">zscaler</a>
+                
+                  <a href="/tag/lab">lab</a>
+                
+                  <a href="/tag/notes">notes</a>
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>For Zscaler Internet Access (ZIA), see this guide.</p>
+
+<blockquote>
+  <p>Disclaimer: I am an employee of Zscaler. These are my own notes from a ZPA homelab deployment with Azure AD and may be incorrect or against best practice. You should consult the <a href="https://help.zscaler.com">Zscaler help portal</a> for official documentation.</p>
+</blockquote>
+
+<h2 id="before-you-begin">Before you begin</h2>
+
+<p>You must have setup users and (optionally) groups in Azure AD. Follow this companion post on how to do so if you haven’t already. It’s free.</p>
+
+<p>From the Azure Home page, in the side menu, click on <strong>Azure Active Directory</strong> to begin.</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad1-cfd5be32ba02119d3d1b973ff64618cffa7e4fb3ba1f648211629aa0dcc7ec79.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad1-cfd5be32ba02119d3d1b973ff64618cffa7e4fb3ba1f648211629aa0dcc7ec79.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad1-cfd5be32ba02119d3d1b973ff64618cffa7e4fb3ba1f648211629aa0dcc7ec79.png" data-zooming-width="1515" data-zooming-height="862" />
+</a></p>
+
+<h2 id="adding-enterprise-applications-for-sso">Adding Enterprise Applications for SSO</h2>
+
+<p>From the directory side menu under <strong>Manage</strong>, click <strong>Enterprise applications</strong>, then <strong>New application</strong>.</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad11-45f58ac42e02b411d036f0a4a666ba43cd52fa9f93d876e1252db9da0298f7dc.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad11-45f58ac42e02b411d036f0a4a666ba43cd52fa9f93d876e1252db9da0298f7dc.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad11-45f58ac42e02b411d036f0a4a666ba43cd52fa9f93d876e1252db9da0298f7dc.png" data-zooming-width="1153" data-zooming-height="405" />
+</a></p>
+
+<p>Search for the application you want to integrate with. In this case, <code class="highlighter-rouge">Zscaler</code></p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad12-2f0c946d6915edee9a375e4ba5ad2b6eb7b41edc630c9930ff0da157ebc16504.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad12-2f0c946d6915edee9a375e4ba5ad2b6eb7b41edc630c9930ff0da157ebc16504.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad12-2f0c946d6915edee9a375e4ba5ad2b6eb7b41edc630c9930ff0da157ebc16504.png" data-zooming-width="1613" data-zooming-height="609" />
+</a></p>
+
+<h2 id="configuring-zpa-to-use-azure-ad">Configuring ZPA to use Azure AD</h2>
+
+<blockquote>
+  <p>Zscaler Private Access (ZPA)</p>
+</blockquote>
+
+<h3 id="1---create-the-zpa-application">1 - Create the ZPA application</h3>
+
+<p>Under the enterprise apps page above, select <strong>Zscaler Private Access (ZPA)</strong> and click <strong>Create</strong>.</p>
+
+<p>The application will be created in Azure AD and you will be redirected to the Overview page.</p>
+
+<h3 id="2---assign-users-and-groups-to-the-zscaler-app-in-azure-ad">2 - Assign Users and Groups to the Zscaler App in Azure AD</h3>
+
+<p>In order for users to be able to use the Zscaler service, you must first assign the Zscaler application to them in Azure AD.</p>
+
+<p>In the side navigation menu for Azure AD, click <strong>Users and Groups</strong>, then <strong>Add user</strong>.</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad20-5ff7faa26d7b0825978f462846b7f78c4859aa0d6112f648b4a6c2b64ff4eb5e.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad20-5ff7faa26d7b0825978f462846b7f78c4859aa0d6112f648b4a6c2b64ff4eb5e.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad20-5ff7faa26d7b0825978f462846b7f78c4859aa0d6112f648b4a6c2b64ff4eb5e.png" data-zooming-width="1171" data-zooming-height="543" />
+</a></p>
+
+<p>If you are using the free Azure AD plan, then you will only be allowed to assign individual users, not groups to the application.</p>
+
+<p>Click <strong>Users</strong> and select all of the user accounts you wish to assign ZPA access to. Then click <strong>Assign</strong> to finish.</p>
+
+<h3 id="3---configure-the-idp-in-the-zpa-admin-portal">3 - Configure the IdP in the ZPA Admin Portal</h3>
+
+<p>Open a new tab and navigate to your Zscaler admin portal for ZPA:
+https://admin.private.zscaler.com</p>
+
+<p>In the side navigation menu, go to <strong>Administration</strong> &gt; <strong>IdP Configuration</strong></p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa1-72eacd491a6af8e92ea96e024db63808bed38a853a7bfc1e098b7c05f159c2f7.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa1-72eacd491a6af8e92ea96e024db63808bed38a853a7bfc1e098b7c05f159c2f7.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa1-72eacd491a6af8e92ea96e024db63808bed38a853a7bfc1e098b7c05f159c2f7.png" data-zooming-width="481" data-zooming-height="468" />
+</a></p>
+
+<p>Click <strong>Add IdP Configuration</strong> at the top-right of the screen.</p>
+
+<p>Under the <strong>IdP Information</strong> section:</p>
+
+<ol>
+  <li>Enter a name for the IdP configuration.
+ZPA supports multipe IdPs, hence a name is required to differentiate them.</li>
+  <li>Ensure <strong>User</strong> is selected for <strong>Single Sign-On</strong>.</li>
+  <li>Select the domain you wish to associate with the IdP configuration.
+Zscaler support must add any additional domains to your admin portal first before you can use them.</li>
+</ol>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa2-120bffd65534010de8b35247cfc1d176d7a497e5cbe9f5c2e8b7770ee98514d5.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa2-120bffd65534010de8b35247cfc1d176d7a497e5cbe9f5c2e8b7770ee98514d5.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa2-120bffd65534010de8b35247cfc1d176d7a497e5cbe9f5c2e8b7770ee98514d5.png" data-zooming-width="771" data-zooming-height="489" />
+</a></p>
+
+<p>Click <strong>Next</strong> to continue.</p>
+
+<p>The next tab shows info you’ll need to copy and add into Azure AD. Note down the <strong>Service Provider Entity ID</strong> and <strong>Service Provider URL</strong> fields.</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa3-13e37c387f337c888db9ca8038d48844dbb425005c918da64649c325fbafa3b0.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa3-13e37c387f337c888db9ca8038d48844dbb425005c918da64649c325fbafa3b0.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa3-13e37c387f337c888db9ca8038d48844dbb425005c918da64649c325fbafa3b0.png" data-zooming-width="768" data-zooming-height="453" />
+</a></p>
+
+<p>Click <strong>Pause</strong> and return to the Azure AD portal.</p>
+
+<h3 id="4---configure-saml-sso-in-azure-ad">4 - Configure SAML SSO in Azure AD</h3>
+
+<p>From the side navigation menu in the Azure AD portal, under <strong>Manage</strong>, click <strong>Single sign-on</strong>.</p>
+
+<p>When prompted to select a SSO method, click <strong>SAML</strong>.</p>
+
+<p>Click the pencil/edit icon next to <strong>Section 1 - Basic SAML Configuration</strong>.</p>
+
+<ul>
+  <li>For <strong>Identifier</strong>, enter the <strong>Service Provider Entity ID</strong> copied from the ZPA portal. This will be in the format:
+<code class="highlighter-rouge">https://samlsp.private.zscaler.com/auth/metadata/&lt;uniqueID&gt;</code></li>
+  <li>For <strong>Reply URL</strong>, enter the <strong>Service Provider URL</strong> copied from the ZPA portal. This will be in the format:
+<code class="highlighter-rouge">https://samlsp.private.zscaler.com/auth/&lt;uniqueID&gt;/sso</code></li>
+  <li>For <strong>Sign on URL</strong>, enter the following URL replacing the <code class="highlighter-rouge">&lt;company.com&gt;</code> with your full domain from Azure AD:
+<code class="highlighter-rouge">https://samlsp.private.zscaler.com/auth/v2/login?domain=&lt;company.com&gt;</code></li>
+  <li>Leave <strong>Relay State</strong> and <strong>Logout URL</strong> blank.</li>
+</ul>
+
+<p>After saving, you will be prompted to test the configuration: <strong>DO NOT test the configuration at this time</strong>.</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad21-acad98bcd8d0f3cd1017f3aa6b3e4937d0769c6472f828c52fd42945be080153.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad21-acad98bcd8d0f3cd1017f3aa6b3e4937d0769c6472f828c52fd42945be080153.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/aad21-acad98bcd8d0f3cd1017f3aa6b3e4937d0769c6472f828c52fd42945be080153.png" data-zooming-width="1870" data-zooming-height="1118" />
+</a></p>
+
+<p>Under <strong>Section 3 - SAML Signing Certificate</strong>, download the <strong>Certificate (Base64)</strong> and <strong>Federation Metadata XML</strong> file. You will need to upload these to the to the ZPA admin portal in the next step.</p>
+
+<p>IMPORTANT: The certificate file MUST be in <code class="highlighter-rouge">.pem</code> format. If it downloads as a <code class="highlighter-rouge">.cer</code> file, change the extension to <code class="highlighter-rouge">.pem</code></p>
+
+<h3 id="5---configure-saml-sso--scim-provisioning-in-the-zpa-admin-portal">5 - Configure SAML SSO &amp; SCIM Provisioning in the ZPA Admin Portal</h3>
+
+<p>Return to the <strong>IdP Configuration</strong> page in ZPA admin portal. Under <strong>Actions</strong>, click the <strong>play/resume button</strong> to continue with the configuration.</p>
+
+<ul>
+  <li>For <strong>IdP Metadata File</strong>, upload the <strong>Federation Metadata XML</strong> file you downloaded from Azure AD. This will automatically populate the <strong>Single Sign-On URL</strong> and <strong>IdP Entity ID</strong> fields.
+If for whatever reason these don’t populate, they correspond to the <strong>Login URL</strong> and <strong>Azure AD Identifier</strong> URLs respectively from the SAML setup page in AAD.</li>
+  <li>For <strong>IdP Certificate</strong>, upload the Certificate (Base64) file in <code class="highlighter-rouge">.pem</code> format downloaded from Azure AD. If it downloaded as a <code class="highlighter-rouge">.cer</code> file, you may need to change the file extension to <code class="highlighter-rouge">.pem</code> first.</li>
+  <li>Set the <strong>Status</strong> to <strong>Enabled</strong>.</li>
+  <li>Set <strong>ZPA SAML Request</strong> to <strong>Signed</strong>.</li>
+  <li>Set <strong>HTTP-Redirect</strong> to <strong>Disabled</strong>.</li>
+</ul>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa4-8be034499250f70ac6120f628e6542bb990b28d2a9083f9d01790a2be95c3d68.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa4-8be034499250f70ac6120f628e6542bb990b28d2a9083f9d01790a2be95c3d68.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa4-8be034499250f70ac6120f628e6542bb990b28d2a9083f9d01790a2be95c3d68.png" data-zooming-width="768" data-zooming-height="958" />
+</a></p>
+
+<p>Under <strong>SCIM</strong>, set <strong>SCIM Sync</strong> to <strong>Enabled</strong>, and <strong>generate a new bearer token</strong>.</p>
+
+<p>Copy the <strong>SCIM Service Provider Endpoint</strong> URL and <strong>Bearer Token</strong> - you will need these in the next step.</p>
+
+<p>Click <strong>Save</strong> when you are finished.</p>
+
+<h3 id="6---configure-scim-provisioning-in-azure-ad">6 - Configure SCIM Provisioning in Azure AD</h3>
+
+<p>Go back to Azure AD, and in the side navigation menu, click <strong>Provisioning</strong>.</p>
+
+<ul>
+  <li>Set the <strong>Provisioning Mode</strong> to <strong>Automatic</strong>.</li>
+  <li>For <strong>Tenant URL</strong> enter the <strong>SCIM Service Provider Endpoint</strong> URL copied from the admin portal.
+<code class="highlighter-rouge">https://scim1.private.zscaler.com/scim/1/&lt;uniqueID&gt;/v2</code></li>
+  <li>For <strong>Secret Token</strong>, enter the <strong>Bearer Token</strong> copied from the admin portal.</li>
+</ul>
+
+<p>Click <strong>Test Connection</strong> to verify everything works. <strong>Save</strong> the configuration when the test passes.</p>
+
+<p>IMPORTANT: Make sure to set <strong>Provisioning Status</strong> to <strong>On</strong>. You will need to re-save the configuration for this to stay set.</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa5-643bc98bc816721bf09f40f12ab30d5ecf23bf40e423cf0eddb867aea62c3cbb.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa5-643bc98bc816721bf09f40f12ab30d5ecf23bf40e423cf0eddb867aea62c3cbb.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa5-643bc98bc816721bf09f40f12ab30d5ecf23bf40e423cf0eddb867aea62c3cbb.png" data-zooming-width="1023" data-zooming-height="644" />
+</a></p>
+
+<h3 id="7---check-user-provisioning-status">7 - Check User Provisioning Status</h3>
+
+<p>You may need to wait for the provisioning cycle to complete before the users are able to log in.</p>
+
+<p>To view the status of user provisioning, click <strong>Provisioning</strong> from the side menu (where you enabled automatic provisioning via SCIM above).</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa6-6441c0f3dcb35e422784fe0bb33686a4c5ecf3fdf2c669481acd6a44ac847e68.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa6-6441c0f3dcb35e422784fe0bb33686a4c5ecf3fdf2c669481acd6a44ac847e68.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa6-6441c0f3dcb35e422784fe0bb33686a4c5ecf3fdf2c669481acd6a44ac847e68.png" data-zooming-width="747" data-zooming-height="521" />
+</a></p>
+
+<h3 id="8---import-saml-attributes-to-verify-idp-configuration">8 - Import SAML attributes to verify IdP Configuration</h3>
+
+<p>Form the ZPA admin portal, you need to import SAML attributes from Azure AD. This also allows us to test whether user authentication is working correctly.</p>
+
+<ol>
+  <li>Open the ZPA admin portal: https://admin.private.zscaler.com</li>
+  <li>In the side navigation menu, go to <strong>Administration</strong> &gt; <strong>IdP Configuration</strong>.</li>
+  <li>Expand the IdP configuration you want to import the attributes from.</li>
+  <li>Under <strong>Import SAML Attributes</strong> select one of the domains you associated with the IdP and click <strong>Import</strong>.</li>
+</ol>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa7-ecd9cfa641d577a076cb02fc253dd83ecbcc3f3b7356a56aca49af7e2b65d230.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa7-ecd9cfa641d577a076cb02fc253dd83ecbcc3f3b7356a56aca49af7e2b65d230.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa7-ecd9cfa641d577a076cb02fc253dd83ecbcc3f3b7356a56aca49af7e2b65d230.png" data-zooming-width="1822" data-zooming-height="484" />
+</a></p>
+
+<p>If all is working, you will be prompted to sign in using Microsoft SSO, after which you will be redirected back to the ZPA admin portal.</p>
+
+<p>The JSON string at the bottom of the ZPA window shows all of the SAML attributes, whereas the attributes that appear in the table at the top of the screen are a subset <strong>that haven’t been imported yet</strong>. If you don’t see any SAML attributes in the table, then this means that they have all already been imported.</p>
+
+<p><a href="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa8-f05cdc11489ce9b3f3ecaa9050232336f068a78e7edeb27d651dfa3efdf0ee40.png">
+  <img src="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa8-f05cdc11489ce9b3f3ecaa9050232336f068a78e7edeb27d651dfa3efdf0ee40.png" alt="" class="zooming" data-rjs="/assets/2020-01-02-configuring-zscaler-zpa-to-use-azure-ad.assets/zpa8-f05cdc11489ce9b3f3ecaa9050232336f068a78e7edeb27d651dfa3efdf0ee40.png" data-zooming-width="1817" data-zooming-height="1001" />
+</a></p>
+
+<p>SAML attributes are used when creating policy. You may wish to rename some of the attributes so they are easy to identify. Eg: <code class="highlighter-rouge">http___[...]_display_name</code> –&gt; Full name, <code class="highlighter-rouge">http___[...]_given_name</code> –&gt; First Name, etc</p>
+
+<p>Click <strong>Save</strong> to import the discovered SAML attributes.</p>
+
+<p>You will be redirected to the <strong>SAML Attributes</strong> page where you can edit or delete attributes as necessary.</p>
+
+<h3 id="9---browser-testing">9 - Browser testing</h3>
+
+<p>You can test the IdP configuration outside of the ZPA admin portal using the following URL. Replace <code class="highlighter-rouge">&lt;company.com&gt;</code> with your company’s domain name as per Azure AD.</p>
+
+<p>IMPORTANT: Test the URL in a Private/Incognito window.</p>
+
+<p><code class="highlighter-rouge">https://samlsp.private.zscaler.com/auth/v2/login?domain=&lt;company.com&gt;&amp;ssotype=test</code></p>
+
+<h3 id="10---user-roles-and-group-mapping-to-zpa">10 - User Roles and Group Mapping to ZPA</h3>
+
+<p>TODO - Need to upgrade to a premium Azure AD account to test groups.</p>
+
+<p>https://help.zscaler.com/zpa/configuration-guide-microsoft-azure-ad</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>If this was the first IdP you configured and your first time setting up ZPA, you will need to raise a support ticket to have ZPA enabled within the Zscaler App mobile portal so that it can be selectively rolled out to users.</p>
+
+          </div>
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=Configuring+Zscaler+Private+Access+(ZPA)+to+use+Azure+AD%20-%20nathancatania.com/posts/configuring-zscaler-zpa-to-use-azure-ad" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=nathancatania.com/posts/configuring-zscaler-zpa-to-use-azure-ad" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=nathancatania.com/posts/configuring-zscaler-zpa-to-use-azure-ad" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"/></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://nathancatania.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    &copy; 2020, Nathan Catania<br>
+    <small>Created with Jekyll using a modified version of the <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Chalk">Chalk</a> theme.</small>
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-91639797-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-91639797-1');
+  </script>
+
+
+<script src="/assets/vendor-a17007ee4932127a9a9d73085a673502b9a053b59724ab37b9725f9081083c91.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-bd1108a48273b097bc65b46c563e1992ee938e8e2232393c7fe5ea4abcf80536.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+</body>
+</html>

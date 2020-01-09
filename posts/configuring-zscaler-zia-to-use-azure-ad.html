@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <title>Nathan Catania | Configuring Zscaler Internet Access (ZIA) to use Azure AD</title>
+  
+  <meta name="description" content="Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Internet Access (ZIA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Configuring Zscaler Internet Access (ZIA) to use Azure AD">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="nathancatania.com/posts/configuring-zscaler-zia-to-use-azure-ad">
+  <meta property="og:description" content="Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Internet Access (ZIA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.">
+  <meta property="og:site_name" content="Nathan Catania">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="nathancatania.com/posts/configuring-zscaler-zia-to-use-azure-ad">
+  <meta name="twitter:title" content="Configuring Zscaler Internet Access (ZIA) to use Azure AD">
+  <meta name="twitter:description" content="Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Internet Access (ZIA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.">
+
+  
+    
+      <meta property="og:image" content="nathancatania.com/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/banner-25bc607c2b7cbebce4ac497b8d111ed330c87a88de5cbf432a801604bb9f7b2f.png">
+      <meta name="twitter:image" content="nathancatania.com/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/banner-25bc607c2b7cbebce4ac497b8d111ed330c87a88de5cbf432a801604bb9f7b2f.png">
+    
+  
+
+  <link href="nathancatania.com/feed.xml" type="application/rss+xml" rel="alternate" title="Nathan Catania Last 10 blog posts" />
+
+  
+
+  
+    <link rel="icon" type="image/x-icon" href="/assets/favicon-light-0fb75e705f4c26badaa4bcdef43cb502633cccf890a2000e372ed03fb65ffdb4.ico">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon-light-3d53a961ad5a122e83b8efada7f6b8eef7586b54e4bbfc404e98401321b1aeb6.png">
+    <link rel="stylesheet" type="text/css" href="/assets/light-15926eb05714671e1f5eb979a6a709aeefc936620f110d0c80a34297ec59311c.css">
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="Nathan Catania">Nathan Catania</a>
+  <ul class="header-links">
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/nathancatania" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/nathancatania" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://hub.docker.com/r/nathancatania" rel="noreferrer noopener" target="_blank" title="Docker Hub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-docker">
+  <use href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker" xlink:href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hello@nathancatania.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <img class="article-image" src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/banner-25bc607c2b7cbebce4ac497b8d111ed330c87a88de5cbf432a801604bb9f7b2f.png">
+            <h1>Configuring Zscaler Internet Access (ZIA) to use Azure AD</h1>
+            <p>Set Azure Active Directory (AAD) as the Identity Provider (IdP) for the Zscaler Internet Access (ZIA) service. Configure SAML Single Sign-On (SSO) and SCIM Provisioning.</p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                January 1, 2020
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  5 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+                  <a href="/tag/azure">azure</a>
+                
+                  <a href="/tag/zscaler">zscaler</a>
+                
+                  <a href="/tag/lab">lab</a>
+                
+                  <a href="/tag/notes">notes</a>
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>For Zscaler Private Access (ZPA), see this guide.</p>
+
+<blockquote>
+  <p>Disclaimer: I am an employee of Zscaler. These are my own notes from a ZIA homelab deployment with Azure AD and may be incorrect or against best practice. You should consult the <a href="https://help.zscaler.com">Zscaler help portal</a> for official documentation.</p>
+</blockquote>
+
+<h2 id="before-you-begin">Before you begin</h2>
+
+<p>You must have setup users and (optionally) groups in Azure AD. Follow this companion post on how to do so if you haven’t already. It’s free.</p>
+
+<p>From the Azure Home page, in the side menu, click on <strong>Azure Active Directory</strong> to begin.</p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad1-cfd5be32ba02119d3d1b973ff64618cffa7e4fb3ba1f648211629aa0dcc7ec79.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad1-cfd5be32ba02119d3d1b973ff64618cffa7e4fb3ba1f648211629aa0dcc7ec79.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad1-cfd5be32ba02119d3d1b973ff64618cffa7e4fb3ba1f648211629aa0dcc7ec79.png" data-zooming-width="1515" data-zooming-height="862" />
+</a></p>
+
+<h2 id="adding-enterprise-applications-for-sso">Adding Enterprise Applications for SSO</h2>
+
+<p>From the directory side menu under <strong>Manage</strong>, click <strong>Enterprise applications</strong>, then <strong>New application</strong>.</p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad11-45f58ac42e02b411d036f0a4a666ba43cd52fa9f93d876e1252db9da0298f7dc.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad11-45f58ac42e02b411d036f0a4a666ba43cd52fa9f93d876e1252db9da0298f7dc.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad11-45f58ac42e02b411d036f0a4a666ba43cd52fa9f93d876e1252db9da0298f7dc.png" data-zooming-width="1153" data-zooming-height="405" />
+</a></p>
+
+<p>Search for the application you want to integrate with. In this case, <code class="highlighter-rouge">Zscaler</code></p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad12-2f0c946d6915edee9a375e4ba5ad2b6eb7b41edc630c9930ff0da157ebc16504.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad12-2f0c946d6915edee9a375e4ba5ad2b6eb7b41edc630c9930ff0da157ebc16504.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad12-2f0c946d6915edee9a375e4ba5ad2b6eb7b41edc630c9930ff0da157ebc16504.png" data-zooming-width="1613" data-zooming-height="609" />
+</a></p>
+
+<h2 id="configuring-zia-to-use-azure-ad">Configuring ZIA to use Azure AD</h2>
+
+<blockquote>
+  <p>Zscaler Internet Access (ZIA)</p>
+</blockquote>
+
+<h3 id="1---create-the-zscaler-application">1 - Create the Zscaler application</h3>
+
+<p>Under the enterprise apps page above, select the Zscaler application that corresponds to cloud you connect to the admin portal with. For example:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">admin.zscalertwo.net</code> == <strong>Zscaler Two</strong></li>
+  <li><code class="highlighter-rouge">admin.zscaler.net</code> == <strong>Zscaler</strong></li>
+</ul>
+
+<p>When you have found your application, click <strong>Create</strong>.</p>
+
+<h3 id="2---assign-users-and-groups-to-the-zscaler-app-in-azure-ad">2 - Assign Users and Groups to the Zscaler App in Azure AD</h3>
+
+<p>In order for users to be able to use the Zscaler service, you must first assign the Zscaler application to them in Azure AD.</p>
+
+<p>In the side navigation menu for Azure AD, click <strong>Users and Groups</strong>, then <strong>Add user</strong>.</p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad15-e1396f805e97b854ab43545d58218834833aa591dd9ec2f72825079611191d5f.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad15-e1396f805e97b854ab43545d58218834833aa591dd9ec2f72825079611191d5f.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad15-e1396f805e97b854ab43545d58218834833aa591dd9ec2f72825079611191d5f.png" data-zooming-width="1036" data-zooming-height="406" />
+</a></p>
+
+<p>If you are using the free Azure AD plan, then you will only be allowed to assign individual users, not groups to the application.</p>
+
+<p>Click <strong>Users</strong> and select all of the user accounts you wish to assign ZIA access to. Then click <strong>Assign</strong> to finish.</p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad16-8c67dea97a30259dfeea81e5a5e3a3c34b7f220aa4708e7dc597408be1688744.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad16-8c67dea97a30259dfeea81e5a5e3a3c34b7f220aa4708e7dc597408be1688744.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad16-8c67dea97a30259dfeea81e5a5e3a3c34b7f220aa4708e7dc597408be1688744.png" data-zooming-width="1321" data-zooming-height="619" />
+</a></p>
+
+<p>The selected users will now be able to access the Zscaler application (after provisioning and synchronization with Zscaler is configured in the following steps).</p>
+
+<h3 id="3---configure-saml-sso-in-azure-ad">3 - Configure SAML SSO in Azure AD</h3>
+
+<p>From the side navigation menu, under <strong>Manage</strong>, click <strong>Single sign-on</strong>.</p>
+
+<p>When prompted to select a SSO method, click <strong>SAML</strong>.</p>
+
+<p>Click the pencil/edit icon next to <strong>Section 1 - Basic SAML Configuration</strong>.</p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad13-39959eabf843abcad668299db5b00ddf8ca8278948eb5405945533f2e154cb0f.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad13-39959eabf843abcad668299db5b00ddf8ca8278948eb5405945533f2e154cb0f.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad13-39959eabf843abcad668299db5b00ddf8ca8278948eb5405945533f2e154cb0f.png" data-zooming-width="1910" data-zooming-height="1074" />
+</a></p>
+
+<ul>
+  <li>For <strong>Identifier</strong>, enter <code class="highlighter-rouge">&lt;zscalercloud&gt;.net</code>. You would have identified this in Step 1 above.
+For example:
+    <ul>
+      <li>For <strong>Zscaler Two</strong>, enter <code class="highlighter-rouge">zscalertwo.net</code> as the Identifier.</li>
+      <li>For <strong>ZS Cloud</strong>, enter <code class="highlighter-rouge">zscloud.net</code> as the Identifier.</li>
+      <li>For <strong>Zscaler</strong>, enter <code class="highlighter-rouge">zscaler.net</code> as the Identifier.</li>
+      <li>For <strong>Zscaler One</strong>, enter <code class="highlighter-rouge">zscalerone.net</code> as the Identifier.</li>
+      <li>For <strong>Zscaler Three</strong>, enter <code class="highlighter-rouge">zscalerthree.net</code> as the Identifier.</li>
+    </ul>
+  </li>
+  <li>For <strong>Reply URL</strong>, enter the following - replacing <code class="highlighter-rouge">&lt;zscalercloud&gt;</code> with the name of your cloud from above:
+<code class="highlighter-rouge">https://login.&lt;zscalercloud&gt;.net/sfc_sso</code></li>
+  <li>For <strong>Sign on URL</strong>, enter the same URL as above.</li>
+  <li>Leave <strong>Relay State</strong> and <strong>Logout URL</strong> blank.</li>
+</ul>
+
+<p>The screenshot above shows the configuration for the <code class="highlighter-rouge">zscaler.net</code> cloud.</p>
+
+<p>Next, go to <strong>Section 3 - SAML Signing Certificate</strong>, and download the <strong>Base64</strong> Certificate. You will need to upload this later to the ZIA admin portal.
+<strong>IMPORTANT:</strong> The certificate will download as a <code class="highlighter-rouge">.cer</code> file. Change the file extension to <code class="highlighter-rouge">.pem</code>, eg: <code class="highlighter-rouge">Zscaler.pem</code></p>
+
+<p>Next, scroll down to <strong>Section 5 - Set up Zscaler</strong>, and expand the <strong>Configuration URLs</strong>. Note down the <strong>Login URL</strong> - you will need this later in the ZIA admin portal.</p>
+
+<h3 id="4---configure-saml-sso--scim-provisioning-in-the-zscaler-admin-portal">4 - Configure SAML SSO &amp; SCIM Provisioning in the Zscaler Admin Portal</h3>
+
+<p>Open a new tab and navigate to your Zscaler admin portal for ZIA:
+<code class="highlighter-rouge">https://admin.&lt;zscalercloud&gt;.net</code></p>
+
+<p>In the side navigation menu, go to <strong>Administration</strong> &gt; <strong>Authentication Settings</strong></p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs1-63fdd74389f398db196b23e1951dd9f960aee28126c122b1826642fc1ffb96ad.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs1-63fdd74389f398db196b23e1951dd9f960aee28126c122b1826642fc1ffb96ad.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs1-63fdd74389f398db196b23e1951dd9f960aee28126c122b1826642fc1ffb96ad.png" data-zooming-width="489" data-zooming-height="442" />
+</a></p>
+
+<p>Select <strong>SAML</strong> as the Authentication Type and click the <strong>Configure SAML</strong> link.</p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs2-6a4d420cafa95ee9c486d686ae2d63dc6718ee8f92d324bd3bc2c086c929e03f.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs2-6a4d420cafa95ee9c486d686ae2d63dc6718ee8f92d324bd3bc2c086c929e03f.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs2-6a4d420cafa95ee9c486d686ae2d63dc6718ee8f92d324bd3bc2c086c929e03f.png" data-zooming-width="693" data-zooming-height="387" />
+</a></p>
+
+<p>Fill in the details as follows:</p>
+
+<ul>
+  <li>For <strong>SAML Portal URL</strong>, enter the <strong>Login URL</strong> you copied from Azure AD under <strong>Section 5 - Set up Zscaler</strong>.
+<code class="highlighter-rouge">https://login.microsoftonline.com/&lt;uniquetoken&gt;/saml2</code></li>
+  <li>For <strong>Login Name Attribute</strong> enter: <code class="highlighter-rouge">NameID</code></li>
+  <li>For <strong>Public SSL Certificate</strong> upload the Base64 certificate you downloaded from Azure AD under <strong>Section 3 - SAML Signing Certificate</strong>.
+It MUST be in <code class="highlighter-rouge">.pem</code> format. If it downloaded as a <code class="highlighter-rouge">.cer</code> file, simply change the file extension to `.pem.</li>
+  <li>Disable <strong>Sign SAML Request</strong> - Azure AD doesn’t support signed SAML responses from Service Providers.</li>
+  <li>Disable <strong>Enable SAML Auto-Provisioning</strong> - SCIM is the recommended option for auto-provisioning and should be used where possible instead.</li>
+  <li>Check <strong>Enable SCIM-Based Provisioning</strong>. Copy the <strong>Base URL</strong> and <strong>Bearer Token</strong> - you will need both of these in the next section.</li>
+</ul>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs3-5e2d5c86502391cda4ec67acd062d0a84fa7eb23ea7c93c8bee2d4a58b24f2ea.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs3-5e2d5c86502391cda4ec67acd062d0a84fa7eb23ea7c93c8bee2d4a58b24f2ea.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/zs3-5e2d5c86502391cda4ec67acd062d0a84fa7eb23ea7c93c8bee2d4a58b24f2ea.png" data-zooming-width="676" data-zooming-height="911" />
+</a></p>
+
+<p>Save your changes and don’t forget to activate!</p>
+
+<h3 id="5---configure-scim-provisioning-in-azure-ad">5 - Configure SCIM Provisioning in Azure AD</h3>
+
+<p>Go back to Azure AD, and in the side navigation menu, click <strong>Provisioning</strong>.</p>
+
+<ul>
+  <li>Set the <strong>Provisioning Mode</strong> to <strong>Automatic</strong>.</li>
+  <li>For <strong>Tenant URL</strong> enter the <strong>Base URL</strong> copied from the admin portal.
+<code class="highlighter-rouge">https://scim.zscaler.net/&lt;uniqueID&gt;/scim</code></li>
+  <li>For <strong>Secret Token</strong>, enter the <strong>Bearer Token</strong> copied from the admin portal.</li>
+</ul>
+
+<p>Click <strong>Test Connection</strong> to verify everything works. Save the configuration when the test passes.</p>
+
+<p>IMPORTANT: Make sure to set <strong>Provisioning Status</strong> to <strong>On</strong>. You will need to re-save the configuration for this to stay set.</p>
+
+<p><a href="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad14-87c26b9ba65878fad3dce14a22d14ccf25351dab2fd3f83cec1e3513f7324ee7.png">
+  <img src="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad14-87c26b9ba65878fad3dce14a22d14ccf25351dab2fd3f83cec1e3513f7324ee7.png" alt="" class="zooming" data-rjs="/assets/2020-01-01-configuring-zscaler-zia-to-use-azure-ad.assets/aad14-87c26b9ba65878fad3dce14a22d14ccf25351dab2fd3f83cec1e3513f7324ee7.png" data-zooming-width="1085" data-zooming-height="543" />
+</a></p>
+
+<h3 id="6---check-user-provisioning-status">6 - Check User Provisioning Status</h3>
+
+<p>You may need to wait for the provisioning cycle to complete before the users are able to log in.</p>
+
+<p>To view the status of user provisioning, click <strong>Provisioning</strong> from the side menu (where you enabled automatic provisioning via SCIM above).</p>
+
+<p>If the users look like they have synchronized, then you can see if they are present in the Zscaler admin portal under <strong>Administration</strong> &gt; <strong>User Management</strong>.</p>
+
+          </div>
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=Configuring+Zscaler+Internet+Access+(ZIA)+to+use+Azure+AD%20-%20nathancatania.com/posts/configuring-zscaler-zia-to-use-azure-ad" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=nathancatania.com/posts/configuring-zscaler-zia-to-use-azure-ad" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=nathancatania.com/posts/configuring-zscaler-zia-to-use-azure-ad" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"/></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://nathancatania.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    &copy; 2020, Nathan Catania<br>
+    <small>Created with Jekyll using a modified version of the <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Chalk">Chalk</a> theme.</small>
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-91639797-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-91639797-1');
+  </script>
+
+
+<script src="/assets/vendor-a17007ee4932127a9a9d73085a673502b9a053b59724ab37b9725f9081083c91.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-bd1108a48273b097bc65b46c563e1992ee938e8e2232393c7fe5ea4abcf80536.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+</body>
+</html>

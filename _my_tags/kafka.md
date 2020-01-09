@@ -1,4 +1,0 @@
----
-slug: kafka
-name: Kafka
----

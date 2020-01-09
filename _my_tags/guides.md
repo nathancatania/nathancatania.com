@@ -1,4 +1,0 @@
----
-slug: guides
-name: Guides
----

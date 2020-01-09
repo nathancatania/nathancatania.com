@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <title>Nathan Catania | Deploying Windows Server with an Azure Free Account</title>
+  
+  <meta name="description" content="Microsoft allow you one free Windows B1s VM for 12 months as part of the free Azure account. This guide will show you how to deploy Windows Server for lab use within the limits of the free tier.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Deploying Windows Server with an Azure Free Account">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="nathancatania.com/posts/deploying-windows-server-2019-with-an-azure-free-account">
+  <meta property="og:description" content="Microsoft allow you one free Windows B1s VM for 12 months as part of the free Azure account. This guide will show you how to deploy Windows Server for lab use within the limits of the free tier.">
+  <meta property="og:site_name" content="Nathan Catania">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="nathancatania.com/posts/deploying-windows-server-2019-with-an-azure-free-account">
+  <meta name="twitter:title" content="Deploying Windows Server with an Azure Free Account">
+  <meta name="twitter:description" content="Microsoft allow you one free Windows B1s VM for 12 months as part of the free Azure account. This guide will show you how to deploy Windows Server for lab use within the limits of the free tier.">
+
+  
+    
+      <meta property="og:image" content="nathancatania.com/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/banner-866fdd59a6c406520c21a85d0639fa86ecb57f2b8c8905b5869442bc32611ca4.png">
+      <meta name="twitter:image" content="nathancatania.com/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/banner-866fdd59a6c406520c21a85d0639fa86ecb57f2b8c8905b5869442bc32611ca4.png">
+    
+  
+
+  <link href="nathancatania.com/feed.xml" type="application/rss+xml" rel="alternate" title="Nathan Catania Last 10 blog posts" />
+
+  
+
+  
+    <link rel="icon" type="image/x-icon" href="/assets/favicon-light-0fb75e705f4c26badaa4bcdef43cb502633cccf890a2000e372ed03fb65ffdb4.ico">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon-light-3d53a961ad5a122e83b8efada7f6b8eef7586b54e4bbfc404e98401321b1aeb6.png">
+    <link rel="stylesheet" type="text/css" href="/assets/light-15926eb05714671e1f5eb979a6a709aeefc936620f110d0c80a34297ec59311c.css">
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="Nathan Catania">Nathan Catania</a>
+  <ul class="header-links">
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/nathancatania" rel="noreferrer noopener" target="_blank" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-linkedin">
+  <use href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin" xlink:href="/assets/linkedin-cdc5c107044324a3dfbea2e9ead15873f8dee304c37d73a046988956b706256e.svg#icon-linkedin"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/nathancatania" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://hub.docker.com/r/nathancatania" rel="noreferrer noopener" target="_blank" title="Docker Hub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-docker">
+  <use href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker" xlink:href="/assets/docker-c339e74d6b786fbde73b16d23c150b731f34e6afba1693051596237af7ff9f2d.svg#icon-docker"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:hello@nathancatania.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article scrollappear">
+          <header class="article-header">
+            <img class="article-image" src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/banner-866fdd59a6c406520c21a85d0639fa86ecb57f2b8c8905b5869442bc32611ca4.png">
+            <h1>Deploying Windows Server with an Azure Free Account</h1>
+            <p>Microsoft allow you one free Windows B1s VM for 12 months as part of the free Azure account. This guide will show you how to deploy Windows Server for lab use within the limits of the free tier.</p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                December 30, 2019
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  11 minute read
+                
+              </span>
+              <span class="article-list-divider">-</span>
+              <div class="article-list-tags">
+                
+                  <a href="/tag/azure">azure</a>
+                
+                  <a href="/tag/guides">guides</a>
+                
+                  <a href="/tag/windows">windows</a>
+                
+                  <a href="/tag/lab">lab</a>
+                
+              </div>
+            </div>
+          </header>
+
+          <div class="article-content">
+            <h2 id="get-an-azure-free-account">Get an Azure Free Account</h2>
+
+<p>Before you start, you will need to sign up for a free Azure account: https://azure.microsoft.com/en-au/free/</p>
+
+<p>This gives you some Azure services, like Windows &amp; Linux VMs, free for 12 months, while other Azure services (like Azure Active Directory) are free permanently up to certain usage limits.</p>
+
+<p>To see everything included in the free account, click <a href="https://azure.microsoft.com/en-au/free/free-account-faq/">here</a>.</p>
+
+<p>Note: Don’t expect the server deployed under the free tier to be fast - we are limited to 1GB RAM and 1 vCPU with the B1s instance size.</p>
+
+<h2 id="this-guide">This guide</h2>
+
+<p>This guide will cover deploying a Windows Server VM to Azure and ensuring (at the time of writing this at least) that usage is contrained to the free account limits. This means that if you do everything correctly, you shouldn’t have any on-going charges for the first 12 months - provided your usage doesn’t exceed the free tier limits.</p>
+
+<p>The Azure free account gives you approx US$200 to use on services for the first 30 days, so if you happen to make a mistake, you’ll know the next time you log into Azure as you’re available credit will have decreased.</p>
+
+<h2 id="create-a-windows-server-virtual-machine">Create a Windows Server Virtual Machine</h2>
+
+<p>From Azure Home, click <strong>Create a resource</strong>.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure1-e7c8d490d024bf2910a8826c69ded85eb288fd0b263a04c8d9c7e30461c1eac3.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure1-e7c8d490d024bf2910a8826c69ded85eb288fd0b263a04c8d9c7e30461c1eac3.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure1-e7c8d490d024bf2910a8826c69ded85eb288fd0b263a04c8d9c7e30461c1eac3.png" data-zooming-width="1464" data-zooming-height="461" />
+</a></p>
+
+<p>In the <strong>Search the Marketplace</strong> box, type <code class="highlighter-rouge">Windows Server</code> and select it from the autocomplete box.</p>
+
+<p>Leave the software plan as the default (we will change it in the next step) and click <strong>Create</strong>.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure2-7662648-2efc0e431c6c66a7ef5217ee6b87cb47961c245c3532399b57995bd406d2e44f.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure2-7662648-2efc0e431c6c66a7ef5217ee6b87cb47961c245c3532399b57995bd406d2e44f.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure2-7662648-2efc0e431c6c66a7ef5217ee6b87cb47961c245c3532399b57995bd406d2e44f.png" data-zooming-width="1467" data-zooming-height="698" />
+</a></p>
+
+<h3 id="basics">Basics</h3>
+
+<p>On the next page:</p>
+
+<ol>
+  <li>Leave <strong>Subscription</strong> as the default. It should say <code class="highlighter-rouge">Azure subscription 1</code> or similar.</li>
+  <li>Create a new <strong>Resource Group</strong>. Call it whatever you like. I called mine <code class="highlighter-rouge">WinServerRG</code></li>
+  <li>Give your VM a name.</li>
+  <li>Select the appropriate Azure region to deploy your VM. This should be as close to your location as possible. I chose <code class="highlighter-rouge">Australia East</code>.</li>
+  <li>Leave <strong>Availability Options</strong> as <code class="highlighter-rouge">No infrastructure redundancy required</code>.</li>
+</ol>
+
+<p>For the <strong>Image</strong> field, click <strong>Browse all public and private images</strong>. Scroll down the list and select an image prefixed with <code class="highlighter-rouge">[smalldisk]</code>. I selected <strong>[smalldisk] Windows Server 2019 Datacenter</strong>.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure3-7240d9436af7d41384b84068d83cfa9d3c8e2fc59d6984c1237660e10b8d3f8d.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure3-7240d9436af7d41384b84068d83cfa9d3c8e2fc59d6984c1237660e10b8d3f8d.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure3-7240d9436af7d41384b84068d83cfa9d3c8e2fc59d6984c1237660e10b8d3f8d.png" data-zooming-width="1692" data-zooming-height="913" />
+</a></p>
+
+<p>The <code class="highlighter-rouge">[smalldisk]</code> image options limit the OS disk to 30GB which allows us to stay within the limitations of the Azure free tier. Microsoft give us 2x 64GB of Premium SSD storage as part of the free tier, but by default, a normal Windows Server instance will deploy an OS disk with a 128GB Premium SSD disk.
+<strong>This will cause you to be charged for a 128GB disk if you use a normal Windows Server image.</strong></p>
+
+<p>Note that this still doesn’t keep us within the free tier. Azure will attribute the 30GB OS disk size to a 32GB Premium SSD… which is not covered by the free tier. After we deploy the VM, we can re-size the OS drive to ~60GB which will be covered by one of our free 64GB Premium SSDs.</p>
+
+<p>Next, we need to select the size of the VM.
+<strong>Warning: Be sure to change this! The default size selected is typically very expensive!</strong></p>
+
+<p>Click <strong>Change size</strong> and select <strong>B1s</strong> as the size of the VM instance.<br />
+For the Windows OS, Microsoft include 750 hours per month (for the 1st 12 months) of B1s usage as part of the free tier. 
+NB: 750 hours is just over 31 days. So your entire month is covered, every month, for the first 12 months for this single VM.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure4-06e682698a778f456658de3b641451474649def4de0bcf3e3261f27114073f7b.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure4-06e682698a778f456658de3b641451474649def4de0bcf3e3261f27114073f7b.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure4-06e682698a778f456658de3b641451474649def4de0bcf3e3261f27114073f7b.png" data-zooming-width="1715" data-zooming-height="746" />
+</a></p>
+
+<p>Next, give your VM a username and <strong>STRONG</strong> password.</p>
+
+<p>For <strong>Inbound port rules</strong>, select <strong>RDP (3389)</strong> as the allowed inbound service. This will allow you to remotely connect to your VM once deployed. I also selected <strong>HTTP (80)</strong> and <strong>HTTPS (443)</strong>.</p>
+
+<p>It is critical that you have a strong password defined and that you have very restrictive inbound network security rules in the coming steps. <strong>If you don’t, you have a significant change of your VM being hacked or attacked by a malicious entity.</strong></p>
+
+<p>Click <strong>Next</strong> to go to the <strong>Disks</strong> tab where we will define the storage to be used.</p>
+
+<h3 id="disks">Disks</h3>
+
+<p>Leave <strong>Premium SSD</strong> selected as the OS disk type.
+This allocates a 32GB Premium SSD as the OS drive. However, only 2x 64GB disks are covered by the free tier.
+<strong>As such, after we create the VM, we will need to change the OS disk size to ensure Azure uses a 64GB disk which will be free.</strong></p>
+
+<p>For <strong>Data disks</strong> select <strong>Create and attach a new disk</strong>.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure5-c55578395e84f4fd2bc5583ab38c55a72c5dab94d9708941f5eaf88286411220.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure5-c55578395e84f4fd2bc5583ab38c55a72c5dab94d9708941f5eaf88286411220.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure5-c55578395e84f4fd2bc5583ab38c55a72c5dab94d9708941f5eaf88286411220.png" data-zooming-width="818" data-zooming-height="505" />
+</a></p>
+
+<p>On the next screen change the size of the disk to <code class="highlighter-rouge">64GB</code>, leave the <strong>Source type</strong> as <code class="highlighter-rouge">None</code>, and give it whatever name you want.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure6-39bbfdabbc25c781cc923a2b375f99809ad01654c13e99ba671040073f80633e.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure6-39bbfdabbc25c781cc923a2b375f99809ad01654c13e99ba671040073f80633e.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure6-39bbfdabbc25c781cc923a2b375f99809ad01654c13e99ba671040073f80633e.png" data-zooming-width="754" data-zooming-height="317" />
+</a></p>
+
+<p>Click OK to return to the <strong>Disks</strong> tab and you will see your new disk listed under the <strong>Data disks</strong> section.</p>
+
+<p>Now click <strong>Next</strong> to go to the <strong>Networking</strong> tab where we will define how our VM will be connected to the network and how open it will be for remote access.</p>
+
+<h3 id="networking">Networking</h3>
+
+<p>First, click to create a new Virtual Network.</p>
+
+<p>The <strong>Address range</strong> will be populated to <code class="highlighter-rouge">10.0.0.0/16</code> by default. You can change this to whatever you want. I set my vnet address range to <code class="highlighter-rouge">10.99.0.0/16</code>.</p>
+
+<p>Next you need to carve out a smaller subnet from within the <code class="highlighter-rouge">/16</code> vnet we specified above. Give it a name (it can be anything - I called mine <code class="highlighter-rouge">Infrastructure</code>), and set the CIDR range. I used <code class="highlighter-rouge">10.99.0.0/24</code>.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure7-1b450d0293de2528737a2e76087ffc389eeaf3cb85c76b8f460caf41c6b91e44.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure7-1b450d0293de2528737a2e76087ffc389eeaf3cb85c76b8f460caf41c6b91e44.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure7-1b450d0293de2528737a2e76087ffc389eeaf3cb85c76b8f460caf41c6b91e44.png" data-zooming-width="853" data-zooming-height="549" />
+</a></p>
+
+<p>Click OK when you are done and select both the Virtual network and subnet you created.</p>
+
+<p>Next click to create a new Public IP. Give it a name, set the <em>SKU</em> as <code class="highlighter-rouge">Basic</code> and the <strong>Assignment</strong> as <code class="highlighter-rouge">Static</code>.</p>
+
+<p>Your first 3 fields will look something like this:</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure7-2-190401c312898eda9d67c25909000e40d51bdce6cfd73d3164ac4e340755fdbe.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure7-2-190401c312898eda9d67c25909000e40d51bdce6cfd73d3164ac4e340755fdbe.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure7-2-190401c312898eda9d67c25909000e40d51bdce6cfd73d3164ac4e340755fdbe.png" data-zooming-width="915" data-zooming-height="443" />
+</a></p>
+
+<p>This next step is <strong>CRITICAL</strong> to get correct. Failing to do so will expose your VM to the internet making it vulnerable to attack.</p>
+
+<p>For <strong>NIC network security group</strong>, select <strong>Advanced</strong>, and click to create a new security group.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure9-91c4468926427196e970bdb6a113fb65fa6668e21679ea132e24b6a5813a8b58.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure9-91c4468926427196e970bdb6a113fb65fa6668e21679ea132e24b6a5813a8b58.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure9-91c4468926427196e970bdb6a113fb65fa6668e21679ea132e24b6a5813a8b58.png" data-zooming-width="817" data-zooming-height="310" />
+</a></p>
+
+<p>Give the new security group a name and <strong>delete the default inbound rule present</strong>. Click to add a new inbound rule.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure10-b6e38cc13f831a235f9fdc9bfcd4d536a502ac3872294f93a37e9678e8a0f7c3.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure10-b6e38cc13f831a235f9fdc9bfcd4d536a502ac3872294f93a37e9678e8a0f7c3.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure10-b6e38cc13f831a235f9fdc9bfcd4d536a502ac3872294f93a37e9678e8a0f7c3.png" data-zooming-width="312" data-zooming-height="328" />
+</a></p>
+
+<p>We are going to restrict remote access to your Windows Server VM from your current IP address only. For me, this was my home IP, meaning I’ll only be able to access the VM when I’m at home. Not a big deal and we can always change or update this later.</p>
+
+<p>To find your current public IP address, open a new tab and simply search Google for <code class="highlighter-rouge">What is my IP?</code>. You’ll see something like this:</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure8-7ae9ec67da72d5b83ffda79cc20767f9eaf64a2c67e776c166a0025562761acf.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure8-7ae9ec67da72d5b83ffda79cc20767f9eaf64a2c67e776c166a0025562761acf.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure8-7ae9ec67da72d5b83ffda79cc20767f9eaf64a2c67e776c166a0025562761acf.png" data-zooming-width="811" data-zooming-height="380" />
+</a></p>
+
+<p>I’ve modified this image to obscure my own IP. Select and copy the IP shown and go back to your Azure tab.</p>
+
+<p>Change <strong>Source</strong> field for the inbound security rule to <code class="highlighter-rouge">IP Address</code>. Under <strong>Source IP address/CIDR ranges</strong> paste in your IP address from Google.</p>
+
+<p>Leave <strong>Source port ranges</strong> as an asterisk <code class="highlighter-rouge">*</code>, <strong>Destination</strong> as <code class="highlighter-rouge">Any</code>, but change the <strong>Destination port ranges</strong> as needed. At the very least, add port <code class="highlighter-rouge">3389</code> which is the inbound port for RDP. Without this, you won’t be able to remotely connect to the VM. You can add other ports in too, like <code class="highlighter-rouge">80</code> (for HTTP) or <code class="highlighter-rouge">443</code> (for HTTPS) - just separate ports with a comma, eg: <code class="highlighter-rouge">3389,80,443</code></p>
+
+<p>To open all inbound ports to your VM, you can use an asterisk <code class="highlighter-rouge">*</code> instead to denote <em>any</em> port.</p>
+
+<p>Make sure the <strong>Action</strong> is set to <strong>Allow</strong>. Give the rule a name, and you can change the priority if needed. Click <strong>Add</strong> when finished.</p>
+
+<p>Your rule will look something like the following:</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure11-e3404f67f51f66ce1cb524a9b83285155cad1e3de191429995c701ba8661d2c9.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure11-e3404f67f51f66ce1cb524a9b83285155cad1e3de191429995c701ba8661d2c9.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure11-e3404f67f51f66ce1cb524a9b83285155cad1e3de191429995c701ba8661d2c9.png" data-zooming-width="584" data-zooming-height="746" />
+</a></p>
+
+<p>Next, click to add a new outbound rule. We will explicitly set a rule that allows our VM to reach any destination on the internet.</p>
+
+<p>You can leave the <strong>Source</strong>, <strong>Source port ranges</strong>, and <strong>Destination</strong> as <code class="highlighter-rouge">Any</code>. Change the default <strong>Destination port ranges</strong> from <code class="highlighter-rouge">8080</code> to an asterisk <code class="highlighter-rouge">*</code>
+<strong>Without this, your VM will only be able to connect to remote destinations on port 8080</strong>.</p>
+
+<p>Make sure the <strong>Action</strong> is set to <code class="highlighter-rouge">Allow</code>. GIve the outbound rule a name and click <strong>Add</strong> when you are done.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure12-971020fe3e37ae5b20c87e12e63b2b490084c2681585b173550249a552b730f4.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure12-971020fe3e37ae5b20c87e12e63b2b490084c2681585b173550249a552b730f4.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure12-971020fe3e37ae5b20c87e12e63b2b490084c2681585b173550249a552b730f4.png" data-zooming-width="580" data-zooming-height="684" />
+</a></p>
+
+<p>You are now finished configuring your network secutity group. It should look similar to the following:</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure13-d5d6994544c5d864e82f77fd7a27dd3dd1b2cef09348e8039ba688f833c3588c.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure13-d5d6994544c5d864e82f77fd7a27dd3dd1b2cef09348e8039ba688f833c3588c.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure13-d5d6994544c5d864e82f77fd7a27dd3dd1b2cef09348e8039ba688f833c3588c.png" data-zooming-width="309" data-zooming-height="420" />
+</a></p>
+
+<p>Click OK to create it.</p>
+
+<p>Leave <strong>Accelerated networking</strong> set to <code class="highlighter-rouge">Off</code> and <strong>Load Balancing</strong> set to <code class="highlighter-rouge">No</code>. Click Next to go to the <strong>Management</strong> tab next.</p>
+
+<h3 id="management">Management</h3>
+
+<p>Not much to do on this page. Under the <strong>Monitoring</strong> section, set the <strong>Identity</strong> and <strong>Auto-shutdown</strong> options to <code class="highlighter-rouge">Off</code>.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure14-ff10900fae5ab8716b4ae939ccd97f2e1cf300edb45f793d433a51df7c838925.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure14-ff10900fae5ab8716b4ae939ccd97f2e1cf300edb45f793d433a51df7c838925.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure14-ff10900fae5ab8716b4ae939ccd97f2e1cf300edb45f793d433a51df7c838925.png" data-zooming-width="753" data-zooming-height="628" />
+</a></p>
+
+<p>You can skip the <strong>Advanced</strong> and <strong>Tags</strong> tabs. Go to the <strong>Review + create</strong> tab when ready.</p>
+
+<h3 id="review-and-create">Review and Create</h3>
+
+<p>Make sure everything here is as expected, particularly the VM size/instance type selected. <strong>This should be <code class="highlighter-rouge">B1s</code> to qualify for free tier usage.</strong></p>
+
+<p>Keep in mind that if you make a change to the first <strong>Basics</strong> tab, it will typically wipe all the other tabs meaning you’ll need to fill in all of the above all over again.</p>
+
+<p>Click <strong>Create</strong> when you’re ready to initialize the VM.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure15-16172eedbd3fcbac58d12c54866fee5237bb7304b746cc10bc3ccfbc3c869a94.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure15-16172eedbd3fcbac58d12c54866fee5237bb7304b746cc10bc3ccfbc3c869a94.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure15-16172eedbd3fcbac58d12c54866fee5237bb7304b746cc10bc3ccfbc3c869a94.png" data-zooming-width="1330" data-zooming-height="1010" />
+</a></p>
+
+<h2 id="deployment">Deployment</h2>
+
+<p>After you click <strong>Create</strong> you’ll be redirected to the deployment screen for your VM where you can see the status for each element (like the VM itself, disks, security group, etc) being created.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure16-d2efe3985f99bc95debf0e5d6a99950ae68bb740817c7f2fad638085c7f6a004.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure16-d2efe3985f99bc95debf0e5d6a99950ae68bb740817c7f2fad638085c7f6a004.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure16-d2efe3985f99bc95debf0e5d6a99950ae68bb740817c7f2fad638085c7f6a004.png" data-zooming-width="1243" data-zooming-height="547" />
+</a></p>
+
+<p>Sit back as this can 2-5 minutes to complete. You’ll see the deployment complete screen when your VM is ready.</p>
+
+<p>If you have any errors during deployment. Make sure you followed the guide exactly. My first deployment failed because I didn’t explicitly click to create resources like the Virtual network or subnet - thinking that these would be automatically created and I wouldn’t have to do anything. If you still have issues, <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-portal">Microsoft’s Quickstart Guide for Windows VMs</a> may help.</p>
+
+<h2 id="adjusting-the-os-disk-capacity-for-free-tier-compatibility">Adjusting the OS Disk Capacity for Free Tier Compatibility</h2>
+
+<p>As explained above, the <code class="highlighter-rouge">[smalldisk]</code> Windows Server image only requires 30GB of OS disk space, however this places us within the threshold of the 32GB Premium SSD - which is NOT included in the free Azure tier.</p>
+
+<p>As such, we must expand the 30GB OS disk to ensure we hit the 64GB SSD thereshold and are therefore not billed.</p>
+
+<p>From the Azure Home page, open the menu and go to <strong>Virtual Machines</strong>. If you can’t find the <strong>Virtual Machines</strong> page, you can search for it at the top.</p>
+
+<p>This will show you a list of your VMs. Click the VM you just created to view it in detail.</p>
+
+<p>If your VM is running, you will need to STOP it by clicking the <strong>Stop</strong> button. This can take several minutes. You cannot resize a disk in Azure while the VM it is attached to is running.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/aad25-be40af20de08982b7a42f0815324ce489c6afcc602f184433625bc06edeed4a8.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/aad25-be40af20de08982b7a42f0815324ce489c6afcc602f184433625bc06edeed4a8.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/aad25-be40af20de08982b7a42f0815324ce489c6afcc602f184433625bc06edeed4a8.png" data-zooming-width="1596" data-zooming-height="596" />
+</a></p>
+
+<p>When the VM has stopped, under <strong>Settings</strong>, click <strong>Disks</strong>.</p>
+
+<p>Select the disk listed under <strong>OS disk</strong>.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/aad26-355545e88cbf9c80f0bea8e741a58865c06e287b2733c01e7cccfe0782c09258.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/aad26-355545e88cbf9c80f0bea8e741a58865c06e287b2733c01e7cccfe0782c09258.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/aad26-355545e88cbf9c80f0bea8e741a58865c06e287b2733c01e7cccfe0782c09258.png" data-zooming-width="1681" data-zooming-height="681" />
+</a></p>
+
+<p>Click <strong>Configuration</strong> in the side navigation menu and enter a new size for the drive. Make sure it is greater than 32GB and less than 64GB. When you are done, click <strong>Save</strong>. You can then return to the VM screen and power it on again.</p>
+
+<p>If you want to make use of this extra space inside the VM, you will need to expand the OS drive via <strong>Computer Management</strong> in Windows.</p>
+
+<h2 id="connecting-to-your-virtual-machine">Connecting to your Virtual Machine</h2>
+
+<p>From the Azure Home page, open the menu and go to <strong>Virtual Machines</strong>. If you can’t find the <strong>Virtual Machines</strong> page, you can search for it at the top.</p>
+
+<p>This will show you a list of your VMs. Click the VM you just created to view it in detail.</p>
+
+<p>Click the <strong>Connect</strong> button in the top menu. Note down the public IP assigned to your VM and the port number displayed (this should be 3389 for RDP). You will use these to connect to your VM.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure17-7dae661dc44e8fdba2f675f7603fdc5b7884588332cdc96e10cf495946128ab4.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure17-7dae661dc44e8fdba2f675f7603fdc5b7884588332cdc96e10cf495946128ab4.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure17-7dae661dc44e8fdba2f675f7603fdc5b7884588332cdc96e10cf495946128ab4.png" data-zooming-width="1472" data-zooming-height="809" />
+</a></p>
+
+<p>If you are on a Windows PC, you can download the RDP file and open it to connect to your VM.</p>
+
+<p>If you are on MacOS, you’ll need something like <a href="https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12">Microsoft’s Remote Desktop Client from the Mac App Store</a>, or <a href="https://www.royalapps.com/ts/mac/features">Royal TSX</a> to connect.</p>
+
+<p>The username and password are the ones you specified when you created the VM.</p>
+
+<h2 id="basic-configuration-tasks">Basic Configuration Tasks</h2>
+
+<h3 id="1---check-for-system-updates-and-configure-updates">1 - Check for System Updates and Configure Updates</h3>
+
+<p>Go to <strong>Start</strong> <strong>&gt;</strong> <strong>Settings</strong> (the gear icon on the left side) <strong>&gt;</strong> <strong>Update &amp; Security</strong></p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure18-0477f10506f96abeb8905cb7750ab57d7c46edf42f848ec7f57019fb476321c6.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure18-0477f10506f96abeb8905cb7750ab57d7c46edf42f848ec7f57019fb476321c6.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure18-0477f10506f96abeb8905cb7750ab57d7c46edf42f848ec7f57019fb476321c6.png" data-zooming-width="798" data-zooming-height="631" />
+</a></p>
+
+<p>Check for any system updates that are available, and configure the active hours for the server (the times outside of which the server can restart to install it’s updates). I set my active hours to be 7AM to 1AM daily, which means updates and restarts can occur between 1AM and 7AM each day.</p>
+
+<h3 id="2---set-the-server-name">2 - Set the Server Name</h3>
+
+<p>Under <strong>Server Manager &gt; Local Server</strong>, on the right side, click the <strong>Computer name</strong> field to modify.</p>
+
+<p>You could have also accessed the Windows Update settings from the previous step in this page.</p>
+
+<p>Click on the <strong>Refresh</strong> button at the top of the screen to make the Server Manager window reflect the changes.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure19-39546d0a6734fdd1bac4b6962b0576b15d75583d2df2fe9230d96653e68e9ced.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure19-39546d0a6734fdd1bac4b6962b0576b15d75583d2df2fe9230d96653e68e9ced.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure19-39546d0a6734fdd1bac4b6962b0576b15d75583d2df2fe9230d96653e68e9ced.png" data-zooming-width="1142" data-zooming-height="799" />
+</a></p>
+
+<h3 id="3---set-the-time-zone">3 - Set the Time Zone</h3>
+
+<p>This time under Server Manager, click <strong>Time zone</strong>. Azure sets the server to <code class="highlighter-rouge">UTC</code> by default. Change this to your time zone as applicable.</p>
+
+<h3 id="4---set-a-static-private-ipv4-address">4 - Set a Static Private IPv4 Address</h3>
+
+<p>We’re currently accessing the server via a public IP address. Azure performs NAT to convert this to one of our private virtual network IPs on the server side. That is, the public IP is mapped to one of our 253 usable IP addresses in the <code class="highlighter-rouge">10.99.0.0/24</code> address space (or similar depending on how you configured your network).</p>
+
+<p>By default, it is assigned one of these IPs dynamically. We need to change this to static to ensure the server always has the same private IP.</p>
+
+<p>Open Command Prompt and issue the command <code class="highlighter-rouge">ipconfig</code></p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure19-2-966d3c17d466640333943a81c6fc798fe769b19694df6729f974eed05146b166.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure19-2-966d3c17d466640333943a81c6fc798fe769b19694df6729f974eed05146b166.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure19-2-966d3c17d466640333943a81c6fc798fe769b19694df6729f974eed05146b166.png" data-zooming-width="729" data-zooming-height="201" />
+</a></p>
+
+<p>My server has been assigned the IP of <code class="highlighter-rouge">10.99.0.5</code>. Note down the <strong>IP</strong>, <strong>subnet mask</strong>, and <strong>default gateway</strong>.</p>
+
+<p>Go back to <strong>Server Manager &gt; Local Server</strong> again, and this time click <strong>Ethernet</strong> on the left side.</p>
+
+<p>Right-click on the network adaptor and click <strong>Properties</strong>. Select <strong>Internet Protocol Version 4 (TCP/IPv4)</strong> and click <strong>Properties</strong>. Optionally, untick <strong>Internet Protocol Version 6 (TCP/IPv6)</strong> to disable IPv6.</p>
+
+<p><a href="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure20-bbcffae308246dee462c6eeab4e1955f1a3e3f885c95f606ec223c8464df1137.png">
+  <img src="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure20-bbcffae308246dee462c6eeab4e1955f1a3e3f885c95f606ec223c8464df1137.png" alt="" class="zooming" data-rjs="/assets/2019-12-30-deploying-windows-server-2019-with-an-azure-free-account.assets/azure20-bbcffae308246dee462c6eeab4e1955f1a3e3f885c95f606ec223c8464df1137.png" data-zooming-width="795" data-zooming-height="636" />
+</a></p>
+
+<p>Enter the IP address, subnet mask, and default gateway obtained above. Additionally, manually specify IPs for DNS. I used Cloudflare: <code class="highlighter-rouge">1.1.1.1</code> and <code class="highlighter-rouge">1.0.0.1</code>.</p>
+
+<p><strong>Make sure you triple check the IPs entered!</strong> You may lose access to your VM otherwise!</p>
+
+<p>Click OK when done.</p>
+
+<p>Your RDP connection will drop. Don’t panic. Wait a few seconds, then reconnect.</p>
+
+<h3 id="5---restart-the-server">5 - Restart the Server</h3>
+
+<p>You should restart the server so your changes can take effect (and updates can be installed).</p>
+
+<h2 id="finish">Finish</h2>
+
+<p>Well done! You should now have a working Windows Server deployed using the Azure free tier with a very basic configuration applied.</p>
+
+
+          </div>
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=Deploying+Windows+Server+with+an+Azure+Free+Account%20-%20nathancatania.com/posts/deploying-windows-server-2019-with-an-azure-free-account" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=nathancatania.com/posts/deploying-windows-server-2019-with-an-azure-free-account" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=nathancatania.com/posts/deploying-windows-server-2019-with-an-azure-free-account" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"/></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://nathancatania.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer scrollappear">
+  <p>
+    &copy; 2020, Nathan Catania<br>
+    <small>Created with Jekyll using a modified version of the <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Chalk">Chalk</a> theme.</small>
+  </p>
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-91639797-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-91639797-1');
+  </script>
+
+
+<script src="/assets/vendor-a17007ee4932127a9a9d73085a673502b9a053b59724ab37b9725f9081083c91.js" type="text/javascript"></script>
+
+
+  <script src="/assets/webfonts-bd1108a48273b097bc65b46c563e1992ee938e8e2232393c7fe5ea4abcf80536.js" type="text/javascript"></script>
+
+
+
+  <script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+</body>
+</html>

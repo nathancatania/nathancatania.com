@@ -11,3 +11,5 @@ _drafts/
 vendor/
 .bundle/
 .sass-cache/
+yarn-error.log
+
