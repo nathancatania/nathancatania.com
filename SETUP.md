@@ -6,12 +6,12 @@
 3. `brew install npm`
 4. Edit .bash_profile as per the below (this ensures that Homebrew's packages are used):
 ```
-$ nano ~/.bash_profile
-
-# homebrews should always take precedence
-export PATH=/usr/local/bin:$PATH
-OR
-export PATH="/usr/local/opt/ruby/bin:$PATH
+$ which ruby
+/usr/bin/ruby
+$ echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.bash_profile
+$ logout
+$ which ruby
+/usr/local/opt/ruby/bin/ruby
 ```
 
 Follow this:

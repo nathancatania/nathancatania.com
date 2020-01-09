@@ -7,7 +7,7 @@ paginate: 25
 
 # Optional settings
 about_enabled: false # Change to true if you wish to show an icon in the navigation that redirects to the about page
-baseurl: # eg: /blog
+baseurl: #/blog
 discus_identifier: nathancatania
 ga_analytics: UA-91639797-1
 local_fonts: false # Change to true if you wish to use local fonts
@@ -20,7 +20,7 @@ social:
   github: nathancatania
   linkedin: nathancatania
   twitter: # Add your Twitter handle
-  email: nathan@nathancatania.com
+  email: hello@nathancatania.com
   bitcoin: # Add your Bitcoin link or address
   ethereum: # Add your Ethereum link or address
   gitlab: # Add your GitLab handle
