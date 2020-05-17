@@ -13,9 +13,9 @@ The theme is a modified version of the [Chalk][3] theme.
 
 ![image-1](https://github.com/nathancatania/nathancatania.com/blob/master/_assets/images/README-1.png?raw=true)
 
-![image-2](https://github.com/nathancatania/nathancatania.com/blob/master/_assets/images/README-1.png?raw=true)
+![image-2](https://github.com/nathancatania/nathancatania.com/blob/master/_assets/images/README-2.png?raw=true)
 
-![image-3](https://github.com/nathancatania/nathancatania.com/blob/master/_assets/images/README-1.png?raw=true)
+![image-3](https://github.com/nathancatania/nathancatania.com/blob/master/_assets/images/README-3.png?raw=true)
 
 [1]: https://www.jekyllrb.com
 [2]: https://pages.github.com
