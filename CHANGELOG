@@ -1,8 +1,14 @@
 # Changelog
 
+**DEPRECIATED**
+
+## 2020-05-17
+- Depreciated this website. Moved to Hugo + Netlify (instead of Jekyll + GitHub Pages)
+- New website repository is available [here](https://github.com/nathancatania/website)
+
 ## 2020-01-09
 - Updated footer to 2020
-- Fixed some wording/typos in some existing posts
+- Add posts from 2019-12-30 to 2020-01-05 that were unpublished
 - Added [notes, zscaler, azure, lab] tags
 - Updated email
 
